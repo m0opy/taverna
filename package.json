@@ -12,8 +12,8 @@
   "scripts": {
     "dev": "pnpm --parallel --filter './apps/*' dev",
     "build": "pnpm -r build",
-    "lint": "pnpm -r lint",
-    "typecheck": "pnpm -r typecheck",
+    "lint": "pnpm --filter @taverna/contracts build && pnpm -r lint",
+    "typecheck": "pnpm --filter @taverna/contracts build && pnpm -r typecheck",
     "test": "pnpm -r test",
     "check": "pnpm lint && pnpm typecheck && pnpm test && pnpm build",
     "db:generate": "pnpm --filter @taverna/api db:generate",
