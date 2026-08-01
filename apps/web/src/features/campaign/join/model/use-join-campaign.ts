@@ -4,7 +4,7 @@ import {useState} from 'react';
 import type {FormEvent} from 'react';
 import {useNavigate} from 'react-router-dom';
 
-import {useCurrentUser} from '../../../session/api/me-query';
+import {useCurrentUser} from '../../../../entities/session/api/me-query';
 import {ApiError, apiRequest} from '../../../../shared/api/client';
 import {resolveJoinErrorRedirect} from './resolve-join-error';
 

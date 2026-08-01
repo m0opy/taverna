@@ -5,8 +5,8 @@ import type {FormEvent} from 'react';
 import {useNavigate} from 'react-router-dom';
 
 import {ApiError, apiRequest} from '../../../shared/api/client';
-
-export type AuthMode = 'login' | 'register';
+import {meQuery} from '../../../entities/session/api/me-query';
+import {authPath, authPayload, type AuthFormValues, type AuthMode} from './auth-request';
 
 export function useAuthForm(mode: AuthMode, next: string) {
   const navigate = useNavigate();
@@ -15,13 +15,16 @@ export function useAuthForm(mode: AuthMode, next: string) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const mutation = useMutation({
-    mutationFn: () => apiRequest<UserDto>(`/auth/${mode}`, {
-      method: 'POST',
-      body: JSON.stringify(mode === 'login' ? {email, password} : {name, email, password}),
-    }),
+    mutationFn: () => {
+      const values: AuthFormValues = {name, email, password};
+      return apiRequest<UserDto>(authPath(mode), {
+        method: 'POST',
+        body: JSON.stringify(authPayload(mode, values)),
+      });
+    },
     onSuccess: (user) => {
+      queryClient.setQueryData(meQuery.queryKey, user);
       navigate(next, {replace: true, flushSync: true});
-      queryClient.setQueryData(['me'], user);
     },
   });
 

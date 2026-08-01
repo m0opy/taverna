@@ -1,0 +1,27 @@
+.panel {
+  color: #f7efe3;
+}
+
+.panel a {
+  color: #f4c77c;
+}
+
+.brand {
+  color: inherit;
+  font-family: Georgia, serif;
+  font-size: 1.35rem;
+  letter-spacing: 0.03em;
+  text-decoration: none;
+}
+
+.eyebrow {
+  color: #dfaa57;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.muted {
+  color: #a99f91;
+}

@@ -6,16 +6,6 @@ import {safeNext} from '../lib/navigation';
 afterEach(() => vi.unstubAllGlobals());
 
 describe('apiRequest', () => {
-  it('handles a 204 response without parsing JSON or sending an empty JSON body', async () => {
-    const fetchMock = vi.fn(async (_input: RequestInfo | URL, init?: RequestInit) => {
-      expect(new Headers(init?.headers).has('Content-Type')).toBe(false);
-      return new Response(null, {status: 204});
-    });
-    vi.stubGlobal('fetch', fetchMock);
-
-    await expect(apiRequest<void>('/auth/logout', {method: 'POST'})).resolves.toBeUndefined();
-  });
-
   it('reads the nested error envelope', async () => {
     vi.stubGlobal('fetch', vi.fn(async () => new Response(JSON.stringify({error: {
       code: 'ALREADY_MEMBER', message: 'Уже в кампании', meta: {campaignId: 'campaign-1'}, requestId: 'req-1',

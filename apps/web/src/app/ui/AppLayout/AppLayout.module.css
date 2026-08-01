@@ -1,0 +1,50 @@
+.frame {
+  min-height: 100vh;
+  color-scheme: light;
+  background: #f2ede4;
+  color: #231e18;
+}
+
+.workspace {
+  min-height: calc(100vh - 68px);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 68px;
+  padding: 0 clamp(20px, 5vw, 70px);
+  color: #f7efe3;
+  color-scheme: dark;
+  background: #17130f;
+  border-bottom: 1px solid #3d3329;
+}
+
+.headerUser {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #c7bbaa;
+}
+
+.brand {
+  font-family: Georgia, serif;
+  font-size: 1.35rem;
+  letter-spacing: 0.03em;
+  text-decoration: none;
+}
+
+.workspace :global(.eyebrow) {
+  color: #76501f;
+}
+
+.workspace :global(.status-message) {
+  color: #665d53;
+}
+
+@media (max-width: 640px) {
+  .userName {
+    display: none;
+  }
+}

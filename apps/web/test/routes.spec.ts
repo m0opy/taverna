@@ -1,6 +1,6 @@
 import {describe, expect, it} from 'vitest';
 
-import {routePaths} from './routes';
+import {routePaths} from '../src/app/routes';
 
 describe('MVP route registry', () => {
   it('contains every route promised by the requirements', () => {

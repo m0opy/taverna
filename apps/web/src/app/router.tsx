@@ -1,14 +1,14 @@
 import {createBrowserRouter} from 'react-router-dom';
 
-import {AuthPage} from '../pages/AuthPage';
+import {AuthPage} from '../pages/auth/ui/AuthPage';
 import {CampaignPage} from '../pages/CampaignPage';
 import {CampaignsPage} from '../pages/CampaignsPage';
-import {JoinPage} from '../pages/JoinPage';
-import {LandingPage} from '../pages/LandingPage';
-import {NotFoundPage} from '../pages/NotFoundPage';
 import {CreateCampaignPage} from '../pages/CreateCampaignPage';
-import {AppShell} from '../widgets/app-shell/AppShell';
+import {JoinPage} from '../pages/JoinPage';
+import {NotFoundPage} from '../pages/NotFoundPage';
+import {LandingPage} from '../pages/landing/ui/LandingPage';
 import {GuestOnlyRoute, ProtectedRoute} from './AuthBoundary';
+import {AppLayout} from './ui/AppLayout/AppLayout';
 
 export const router = createBrowserRouter([
   {
@@ -24,7 +24,7 @@ export const router = createBrowserRouter([
     element: <ProtectedRoute />,
     children: [
       {
-        element: <AppShell />,
+        element: <AppLayout />,
         children: [
           {path: '/campaigns', element: <CampaignsPage />},
           {path: '/campaigns/new', element: <CreateCampaignPage />},

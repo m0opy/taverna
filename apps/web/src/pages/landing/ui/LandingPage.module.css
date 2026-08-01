@@ -1,0 +1,144 @@
+.landing {
+  position: relative;
+  min-height: 100vh;
+  padding: 26px clamp(22px, 6vw, 88px) 54px;
+  overflow: hidden;
+  background: radial-gradient(circle at 78% 12%, rgba(173, 103, 33, 0.23), transparent 30%),
+    linear-gradient(145deg, #1c1712 0%, #100e0c 75%);
+}
+
+.landing::after {
+  position: absolute;
+  top: 17%;
+  right: -130px;
+  width: 420px;
+  height: 420px;
+  content: '';
+  pointer-events: none;
+  border: 1px solid rgba(223, 170, 87, 0.16);
+  border-radius: 50%;
+  box-shadow: 0 0 0 70px rgba(223, 170, 87, 0.025), 0 0 0 140px rgba(223, 170, 87, 0.018);
+}
+
+.landingNav {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.landingHero {
+  position: relative;
+  z-index: 1;
+  max-width: 980px;
+  padding: clamp(90px, 15vh, 170px) 0 80px;
+  animation: rise 0.6s ease-out both;
+}
+
+.landingHero h1 {
+  max-width: 900px;
+  margin-bottom: 30px;
+}
+
+.landingCopy {
+  max-width: 650px;
+  margin-bottom: 34px;
+  color: #c5baaa;
+  font-size: clamp(1.05rem, 2vw, 1.35rem);
+  line-height: 1.6;
+}
+
+.chronicle {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 24px;
+  max-width: 1020px;
+  padding: 24px 0;
+  border-top: 1px solid #3d3329;
+  border-bottom: 1px solid #3d3329;
+}
+
+.chronicle h2 {
+  margin-bottom: 6px;
+  font-size: 1.45rem;
+}
+
+.chronicle p {
+  margin-bottom: 0;
+  color: #a99f91;
+}
+
+.chronicleMark {
+  display: grid;
+  place-items: center;
+  width: 54px;
+  height: 54px;
+  color: #dfaa57;
+  font-family: Georgia, serif;
+  border: 1px solid #72562f;
+  border-radius: 50%;
+}
+
+.chronicleDate {
+  color: #a99f91;
+  white-space: nowrap;
+}
+
+.brand {
+  color: inherit;
+  font-family: Georgia, serif;
+  font-size: 1.35rem;
+  letter-spacing: 0.03em;
+  text-decoration: none;
+}
+
+.textLink {
+  color: #f4c77c;
+  text-decoration: none;
+}
+
+.eyebrow {
+  color: #dfaa57;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landingHero {
+    animation: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .chronicle {
+    grid-template-columns: auto 1fr;
+  }
+
+  .chronicleDate {
+    display: none;
+  }
+}
