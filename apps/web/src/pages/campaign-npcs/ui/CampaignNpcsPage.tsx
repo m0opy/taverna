@@ -102,3 +102,5 @@ export function CampaignNpcsPage() {
     </main>
   );
 }
+
+export default CampaignNpcsPage;

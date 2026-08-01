@@ -3,6 +3,7 @@ import {Link, Outlet} from 'react-router-dom';
 
 import {useCurrentUser} from '../../../entities/session/api/me-query';
 import {useLogout} from '../../../features/auth/logout/model/use-logout';
+import {PageBoundary} from '../PageBoundary/PageBoundary';
 import styles from './AppLayout.module.css';
 
 export function AppLayout() {
@@ -26,7 +27,9 @@ export function AppLayout() {
       </ThemeProvider>
       <ThemeProvider scoped theme="light">
         <div className={styles.workspace}>
-          <Outlet />
+          <PageBoundary>
+            <Outlet />
+          </PageBoundary>
         </div>
       </ThemeProvider>
     </div>

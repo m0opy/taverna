@@ -11,3 +11,5 @@ export function CreateCampaignPage() {
     </main>
   );
 }
+
+export default CreateCampaignPage;

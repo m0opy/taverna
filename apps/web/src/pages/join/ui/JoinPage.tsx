@@ -53,3 +53,5 @@ export function JoinPage() {
     </CenteredSurface>
   );
 }
+
+export default JoinPage;

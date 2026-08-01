@@ -46,3 +46,5 @@ export function LandingPage() {
     </main>
   );
 }
+
+export default LandingPage;

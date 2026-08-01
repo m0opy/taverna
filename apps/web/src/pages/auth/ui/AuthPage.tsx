@@ -27,3 +27,5 @@ export function AuthPage({mode}: AuthPageProps) {
     </CenteredSurface>
   );
 }
+
+export default AuthPage;

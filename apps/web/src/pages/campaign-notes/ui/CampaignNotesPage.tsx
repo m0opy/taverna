@@ -136,3 +136,5 @@ export function NotesErrorState({error, onRetry}: {error: unknown; onRetry: () =
     </section>
   );
 }
+
+export default CampaignNotesPage;

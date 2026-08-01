@@ -4,6 +4,7 @@ import {useCurrentUser} from '../entities/session/api/me-query';
 import {ApiError} from '../shared/api/client';
 import {authHref} from '../shared/lib/navigation';
 import {CenteredSurface} from '../shared/ui/centered-surface';
+import {PageLoader} from './ui/PageLoader/PageLoader';
 import styles from './AuthBoundary.module.css';
 
 export function ProtectedRoute() {
@@ -26,7 +27,7 @@ export function GuestOnlyRoute() {
 }
 
 export function RouteLoading() {
-  return <main className={styles.routeLoading}><p className={styles.statusMessage}>Разжигаем огонь…</p></main>;
+  return <PageLoader />;
 }
 
 export function RouteError() {

@@ -20,3 +20,5 @@ export function DashboardPage() {
     </main>
   );
 }
+
+export default DashboardPage;

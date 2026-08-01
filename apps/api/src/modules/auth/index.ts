@@ -30,17 +30,19 @@ function requirePrisma(app: FastifyInstance) {
   return app.prisma;
 }
 
-const authRateLimit = {
+const authRateLimit = (max: number) => ({
   config: {
     rateLimit: {
-      max: 10,
+      max,
       timeWindow: '1 minute',
     },
   },
-};
+});
 
 export async function registerAuthModule(app: FastifyInstance): Promise<void> {
-  app.post('/auth/register', authRateLimit, async (request, reply) => {
+  const authRateLimitConfig = authRateLimit(app.appEnv.NODE_ENV === 'test' ? 100 : 10);
+
+  app.post('/auth/register', authRateLimitConfig, async (request, reply) => {
     const payload = registerRequestSchema.parse(request.body);
     const prisma = requirePrisma(app);
 
@@ -64,7 +66,7 @@ export async function registerAuthModule(app: FastifyInstance): Promise<void> {
     }
   });
 
-  app.post('/auth/login', authRateLimit, async (request, reply) => {
+  app.post('/auth/login', authRateLimitConfig, async (request, reply) => {
     const payload = loginRequestSchema.parse(request.body);
     const user = await requirePrisma(app).user.findUnique({
       where: { email: payload.email },
@@ -79,7 +81,7 @@ export async function registerAuthModule(app: FastifyInstance): Promise<void> {
     return reply.send(userDto(user));
   });
 
-  app.post('/auth/guest', authRateLimit, async (_request, reply) => {
+  app.post('/auth/guest', authRateLimitConfig, async (_request, reply) => {
     if (!app.appEnv.DEMO_PASSWORD) {
       throw new AppError(500, 'INTERNAL_ERROR', 'Demo login is not configured');
     }

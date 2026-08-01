@@ -1,43 +1,48 @@
 import {createBrowserRouter} from 'react-router-dom';
 
-import {AuthPage} from '../pages/auth/ui/AuthPage';
-import {CampaignPage} from '../pages/campaign/ui/CampaignPage';
-import {CreateCampaignPage} from '../pages/campaign/ui/CreateCampaignPage';
-import {DashboardPage} from '../pages/dashboard/ui/DashboardPage';
-import {JoinPage} from '../pages/join/ui/JoinPage';
-import {CampaignNotesPage} from '../pages/campaign-notes/ui/CampaignNotesPage';
-import {CampaignNpcsPage} from '../pages/campaign-npcs/ui/CampaignNpcsPage';
-import {CampaignSettingsPage} from '../pages/campaign-settings/ui/CampaignSettingsPage';
-import {NotFoundPage} from '../pages/NotFoundPage';
-import {LandingPage} from '../pages/landing/ui/LandingPage';
+import {AuthPageLazy} from '../pages/auth';
+import {CampaignPageLazy, CreateCampaignPageLazy} from '../pages/campaign';
+import {CampaignNotesPageLazy} from '../pages/campaign-notes';
+import {CampaignNpcsPageLazy} from '../pages/campaign-npcs';
+import {CampaignSettingsPageLazy} from '../pages/campaign-settings';
+import {DashboardPageLazy} from '../pages/dashboard';
+import {JoinPageLazy} from '../pages/join';
+import {LandingPageLazy} from '../pages/landing';
+import {NotFoundPageLazy} from '../pages/NotFoundPage.lazy';
 import {GuestOnlyRoute, ProtectedRoute} from './AuthBoundary';
 import {AppLayout} from './ui/AppLayout/AppLayout';
+import {RoutePageBoundary} from './ui/PageBoundary/PageBoundary';
 
 export const router = createBrowserRouter([
   {
-    element: <GuestOnlyRoute />,
-    children: [
-      {path: '/', element: <LandingPage />},
-      {path: '/login', element: <AuthPage mode="login" />},
-      {path: '/register', element: <AuthPage mode="register" />},
-    ],
-  },
-  {path: '/join/:token', element: <JoinPage />},
-  {
-    element: <ProtectedRoute />,
+    element: <RoutePageBoundary />,
     children: [
       {
-        element: <AppLayout />,
+        element: <GuestOnlyRoute />,
         children: [
-          {path: '/campaigns', element: <DashboardPage />},
-          {path: '/campaigns/new', element: <CreateCampaignPage />},
-          {path: '/c/:id', element: <CampaignPage section="home" />},
-          {path: '/c/:id/notes', element: <CampaignNotesPage />},
-          {path: '/c/:id/npc', element: <CampaignNpcsPage />},
-          {path: '/c/:id/settings', element: <CampaignSettingsPage />},
+          {path: '/', element: <LandingPageLazy />},
+          {path: '/login', element: <AuthPageLazy mode="login" />},
+          {path: '/register', element: <AuthPageLazy mode="register" />},
         ],
       },
+      {path: '/join/:token', element: <JoinPageLazy />},
+      {
+        element: <ProtectedRoute />,
+        children: [
+          {
+            element: <AppLayout />,
+            children: [
+              {path: '/campaigns', element: <DashboardPageLazy />},
+              {path: '/campaigns/new', element: <CreateCampaignPageLazy />},
+              {path: '/c/:id', element: <CampaignPageLazy section="home" />},
+              {path: '/c/:id/notes', element: <CampaignNotesPageLazy />},
+              {path: '/c/:id/npc', element: <CampaignNpcsPageLazy />},
+              {path: '/c/:id/settings', element: <CampaignSettingsPageLazy />},
+            ],
+          },
+        ],
+      },
+      {path: '*', element: <NotFoundPageLazy />},
     ],
   },
-  {path: '*', element: <NotFoundPage />},
 ]);

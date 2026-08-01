@@ -29,3 +29,5 @@ export function CampaignSettingsPage() {
     </main>
   );
 }
+
+export default CampaignSettingsPage;
