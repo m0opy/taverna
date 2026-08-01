@@ -1,6 +1,6 @@
 # Архитектура MVP
 
-Документ фиксирует одно техническое решение для [requirements.md](/Users/polinashchetkina/project/taverna/ai/docs/requirements.md:1), чтобы за 4 дня не тратить время на повторный выбор стека, структуры и деплоя. Связанные артефакты: [data-model.md](/Users/polinashchetkina/project/taverna/ai/docs/data-model.md:1), [api.md](/Users/polinashchetkina/project/taverna/ai/docs/api.md:1), [testing.md](/Users/polinashchetkina/project/taverna/ai/docs/testing.md:1), [tasks/001-foundation.md](/Users/polinashchetkina/project/taverna/ai/tasks/001-foundation.md:1), [tasks/002-auth-and-first-campaign.md](/Users/polinashchetkina/project/taverna/ai/tasks/002-auth-and-first-campaign.md:1).
+Документ фиксирует одно техническое решение для [requirements.md](/Users/polinashchetkina/project/taverna/ai/docs/requirements.md:1), чтобы за 4 дня не тратить время на повторный выбор стека, структуры и деплоя. Связанные артефакты: [data-model.md](/Users/polinashchetkina/project/taverna/ai/docs/data-model.md:1), [api.md](/Users/polinashchetkina/project/taverna/ai/docs/api.md:1), [testing.md](/Users/polinashchetkina/project/taverna/ai/docs/testing.md:1), [project-context.md](/Users/polinashchetkina/project/taverna/ai/project-context.md:1) и активные tasks `003`–`005`.
 
 ## 1. Зафиксированный стек
 
@@ -19,7 +19,7 @@
 
 ### Статус реализации
 
-Локальный foundation закрыт: `postgres → migrate → api → web` поднимается через Compose, а `GET /api/health` подтверждает доступность БД. На этой стадии модули auth/campaigns/notes/npcs и страницы являются каркасом; их рабочая логика выполняется в Tasks 002–004. VPS, домен, Caddy в публичном доступе и production CI/CD пока не настроены.
+Локальный foundation закрыт: `postgres → migrate → api → web` поднимается через Compose, а `GET /api/health` подтверждает доступность БД. Auth, campaigns, invites, memberships и character update уже реализованы и покрыты текущими проверками. Notes, NPC, guest/demo и часть campaign controls остаются следующим срезом. VPS, домен, Caddy в публичном доступе и production CI/CD пока не проверены.
 
 ## 2. Почему именно этот стек
 
@@ -240,7 +240,7 @@ curl --fail http://127.0.0.1:3000/api/health
 3. Открыть `http://127.0.0.1:5173`
 4. Проверить `curl --fail http://127.0.0.1:3000/api/health`
 
-Цель этапа из [tasks/001-foundation.md](/Users/polinashchetkina/project/taverna/ai/tasks/001-foundation.md:1): один разработчик поднимает проект локально без ручной синхронизации типов между web и api.
+Цель foundation: один разработчик поднимает проект локально без ручной синхронизации типов между web и api.
 
 ## 9. Production deploy
 

@@ -2,7 +2,7 @@
 
 Документ конкретизирует [requirements.md](/Users/polinashchetkina/project/taverna/ai/docs/requirements.md:1) и фиксирует внешний контракт для `apps/web` и `apps/api`. Все request/response schemas живут в `packages/contracts`, валидируются общими Zod-схемами и должны совпадать с этим документом.
 
-> Статус на 30 июля: в коде уже работает только `GET /api/health`. Остальные endpoint'ы ниже — согласованный контракт Tasks 002–004, а не уже доступное API.
+> Статус: `GET /api/health`, auth, campaigns, invite preview/join, memberships и character update реализованы. Notes, NPC, guest/demo и часть campaign controls пока остаются контрактами для следующих срезов; не считать их доступными только потому, что они описаны ниже.
 
 ## 1. Общие правила
 

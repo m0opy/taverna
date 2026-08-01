@@ -2,7 +2,7 @@
 
 Документ задаёт минимально достаточную проверку для 4-дневного релиза. Цель не в полном покрытии, а в том, чтобы не сломать auth, доступы и ключевые сценарии из [requirements.md](/Users/polinashchetkina/project/taverna/ai/docs/requirements.md:129).
 
-> Статус на 30 июля: доступны базовые `pnpm check` и Docker smoke `GET /api/health`. Integration-набор и Playwright ещё не написаны и будут добавляться вместе с функциями в Tasks 002–005.
+> Статус: доступны `pnpm check`, Docker smoke `GET /api/health`, unit-тесты contracts/web и API integration suite для auth/campaign/invite flow. Integration tests требуют локальную PostgreSQL и `TEST_DATABASE_URL`; Notes, NPC, guest/demo и Playwright E2E пока остаются gaps следующих срезов.
 
 ## 1. Что считаем обязательным
 
@@ -153,7 +153,9 @@ docker compose -f infra/compose.dev.yml up --build -d
 curl --fail http://127.0.0.1:3000/api/health
 ```
 
-После появления соответствующих скриптов в Tasks 002–005 CI дополнится `pnpm test:integration` и `pnpm test:e2e`.
+API integration suite уже существует и запускается через Vitest при заданном `TEST_DATABASE_URL`; отдельный root script для неё пока не добавлен. `pnpm test:e2e` и Playwright остаются задачей release-среза после готовности guest flow.
+
+Без `TEST_DATABASE_URL` общий `pnpm check` намеренно обнаруживает API integration file, но пропускает его database-dependent tests. Для release evidence integration-команду нужно запускать с локальной PostgreSQL и фиксировать результат `3 passed, 0 skipped` для текущего auth/campaign набора.
 
 Целевой порядок в CI: дешёвые проверки падают раньше дорогих. Integration job поднимает PostgreSQL 18, выполняет `prisma migrate deploy`, запускает тесты на отдельной БД и всегда удаляет данные job вместе с service container. E2E стартует production builds web/API, а не Vite dev server.
 
