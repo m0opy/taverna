@@ -1,8 +1,8 @@
 .panel {
   padding: 30px;
-  border: 1px solid #c7b99f;
+  border: 1px solid var(--color-line);
   border-radius: var(--radius-surface);
-  background: #e9dece;
+  background: var(--color-surface-muted);
   box-shadow: 0 12px 30px rgba(64, 46, 29, .07);
 }
 
@@ -23,7 +23,7 @@
 }
 
 .eyebrow {
-  color: #dfaa57;
+  color: var(--color-accent-strong);
   font-size: .72rem;
   font-weight: 700;
   letter-spacing: .18em;

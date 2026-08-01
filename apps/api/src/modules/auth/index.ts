@@ -79,6 +79,24 @@ export async function registerAuthModule(app: FastifyInstance): Promise<void> {
     return reply.send(userDto(user));
   });
 
+  app.post('/auth/guest', authRateLimit, async (_request, reply) => {
+    if (!app.appEnv.DEMO_PASSWORD) {
+      throw new AppError(500, 'INTERNAL_ERROR', 'Demo login is not configured');
+    }
+
+    const user = await requirePrisma(app).user.findUnique({
+      where: {email: app.appEnv.DEMO_EMAIL},
+    });
+    const passwordMatches = user ? await verify(user.passwordHash, app.appEnv.DEMO_PASSWORD) : false;
+
+    if (!user || !passwordMatches) {
+      throw new AppError(401, 'INVALID_CREDENTIALS', 'Invalid demo credentials');
+    }
+
+    app.setSession(reply, user.id);
+    return reply.send(userDto(user));
+  });
+
   app.post('/auth/logout', async (_request, reply) => {
     app.clearSession(reply);
     return reply.status(204).send();

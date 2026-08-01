@@ -10,7 +10,7 @@
 .groupTitle {
   margin: 0;
   padding-bottom: 12px;
-  border-bottom: 2px solid #ad7629;
+  border-bottom: 2px solid var(--color-accent);
   color: #49351f;
   font-family: Georgia, 'Times New Roman', serif;
   font-size: clamp(1.35rem, 3vw, 1.85rem);
@@ -22,35 +22,34 @@
   display: grid;
   place-items: center;
   align-content: center;
-  padding: 32px;
-  border: 1px solid #cfc4b5;
-  border-radius: var(--radius-surface);
+  gap: 14px;
+  padding: 52px 0;
   text-align: center;
 }
 
 .emptySigil {
-  margin-bottom: 16px;
-  color: #aa6d1d;
-  font-size: 2rem;
+  color: var(--color-accent);
+  font-size: 2.6rem;
 }
 
 .emptyState h2 {
-  margin-bottom: 10px;
+  margin: 0;
   font-size: 1.7rem;
 }
 
 .emptyState p {
   max-width: 500px;
-  margin-bottom: 22px;
-  color: #6f665c;
+  margin: 0;
+  color: var(--color-ink-muted);
 }
 
 .primaryAction {
+  margin-top: 4px;
   padding: 11px 16px;
-  border: 1px solid #9d6a2a;
+  border: 1px solid var(--color-accent-strong);
   border-radius: var(--radius-control);
   color: #fff8ee;
-  background: #8a5718;
+  background: var(--color-accent-strong);
   cursor: pointer;
   font-weight: 700;
 }
@@ -60,6 +59,6 @@
 }
 
 .primaryAction:focus-visible {
-  outline: 3px solid #bd7924;
+  outline: 2px solid var(--color-accent);
   outline-offset: 3px;
 }

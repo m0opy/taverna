@@ -11,6 +11,7 @@ import {CampaignTabs} from '../../../widgets/campaign-detail/ui/CampaignTabs';
 import {NoteEditor} from '../../../widgets/note-editor/ui/NoteEditor';
 import {NotesList} from '../../../widgets/notes-list/ui/NotesList';
 import {ApiError} from '../../../shared/api/client';
+import {ConfirmDialog} from '../../../shared/ui/ConfirmDialog';
 import styles from './CampaignNotesPage.module.css';
 
 export function CampaignNotesPage() {
@@ -56,11 +57,7 @@ function CampaignNotesView({
   notes: ReturnType<typeof useNotes>;
   onEditorChange: (value: 'create' | NoteDto | null) => void;
 }) {
-  const onDelete = (note: NoteDto) => {
-    if (window.confirm('Удалить эту заметку?')) {
-      deleteNote.mutate(note.id);
-    }
-  };
+  const [noteToDelete, setNoteToDelete] = useState<NoteDto | null>(null);
 
   return (
     <main className={styles.page}>
@@ -103,8 +100,18 @@ function CampaignNotesView({
           {...(deleteNote.isPending && deleteNote.variables ? {deletingNoteId: deleteNote.variables} : {})}
           items={notes.data.items}
           onCreate={() => onEditorChange('create')}
-          onDelete={onDelete}
+          onDelete={setNoteToDelete}
           onEdit={(note) => onEditorChange(note)}
+        />
+      )}
+
+      {noteToDelete && (
+        <ConfirmDialog
+          description="Заметка будет удалена без возможности восстановления."
+          isPending={deleteNote.isPending}
+          title="Удалить заметку?"
+          onCancel={() => setNoteToDelete(null)}
+          onConfirm={() => deleteNote.mutate(noteToDelete.id, {onSuccess: () => setNoteToDelete(null)})}
         />
       )}
     </main>

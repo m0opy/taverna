@@ -3,9 +3,10 @@
   gap: 20px;
   margin-bottom: 42px;
   padding: 26px;
-  border: 1px solid #bba98f;
+  border: 1px solid var(--color-line);
   border-radius: var(--radius-surface);
-  background: #eee6da;
+  background: var(--color-surface-muted);
+  transition: padding .25s ease, gap .25s ease;
 }
 
 .formHeading {
@@ -15,9 +16,15 @@
   gap: 18px;
 }
 
+.headingActions {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+}
+
 .eyebrow {
   margin: 0 0 7px;
-  color: #76501f;
+  color: var(--color-accent-strong);
   font-size: .72rem;
   font-weight: 700;
   letter-spacing: .18em;
@@ -30,8 +37,37 @@
 }
 
 .counter {
-  color: #756b60;
+  color: var(--color-ink-muted);
   font-size: .8rem;
+}
+
+.collapseButton {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  padding: 0;
+  border: 1px solid var(--color-line);
+  border-radius: 50%;
+  color: var(--color-accent-strong);
+  background: transparent;
+  cursor: pointer;
+}
+
+.collapseButton svg {
+  width: 18px;
+  height: 18px;
+}
+
+.collapseButton:hover {
+  border-color: var(--color-accent);
+  background: rgba(255, 255, 255, .36);
+}
+
+.collapsedHint {
+  margin: 0;
+  color: var(--color-ink-muted);
+  font-size: .9rem;
 }
 
 .field {
@@ -46,7 +82,7 @@
 .field input[type='date'] {
   width: 100%;
   padding: 12px 13px;
-  border: 1px solid #a99f91;
+  border: 1px solid #b7aa9b;
   border-radius: var(--radius-control);
   outline: none;
   color: #231e18;
@@ -64,10 +100,10 @@
   border-color: #6f6254;
 }
 
-.field textarea:focus-visible,
-.field input[type='date']:focus-visible {
+.field > textarea:focus-visible,
+.field > input[type='date']:focus-visible {
   border-color: #b87925;
-  box-shadow: 0 0 0 3px rgba(184, 121, 37, .2);
+  box-shadow: 0 0 0 2px var(--color-focus);
 }
 
 .checkbox {
@@ -108,6 +144,12 @@
   display: flex;
   gap: 12px;
   flex-wrap: wrap;
+}
+
+.collapsed {
+  gap: 12px;
+  padding-top: 20px;
+  padding-bottom: 20px;
 }
 
 @media (max-width: 640px) {

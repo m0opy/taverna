@@ -1,0 +1,6 @@
+import type {FastifyInstance} from 'fastify';
+import {z} from 'zod';
+import {joinCampaignRequestSchema, updateCharacterRequestSchema} from '@taverna/contracts';
+import {joinByInvite, leaveOrRemove, previewInvite, updateCharacter} from './service.js';
+const campaign=z.strictObject({id:z.string().uuid()}); const member=z.strictObject({id:z.string().uuid(),membershipId:z.string().uuid()}); const token=z.strictObject({token:z.string().min(1)});
+export async function registerMembershipRoutes(app:FastifyInstance){app.get('/invites/:token',async r=>previewInvite(app,token.parse(r.params).token));app.post('/invites/:token/join',{preHandler:app.authenticate},async(r,reply)=>reply.status(201).send(await joinByInvite(app,token.parse(r.params).token,r.currentUserId!,joinCampaignRequestSchema.parse(r.body))));app.patch('/campaigns/:id/me',{preHandler:app.authenticate},async r=>updateCharacter(app,campaign.parse(r.params).id,r.currentUserId!,updateCharacterRequestSchema.parse(r.body)));app.delete('/campaigns/:id/members/:membershipId',{preHandler:app.authenticate},async(r,reply)=>{const p=member.parse(r.params);await leaveOrRemove(app,p.id,p.membershipId,r.currentUserId!);return reply.status(204).send();});}

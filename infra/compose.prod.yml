@@ -28,6 +28,7 @@ services:
       APP_ORIGIN: https://${DOMAIN:?DOMAIN is required}
       APP_VERSION: ${APP_VERSION:?APP_VERSION is required}
       ENABLE_DEMO_SEED: ${ENABLE_DEMO_SEED:-true}
+      DEMO_EMAIL: ${DEMO_EMAIL:-demo@tavern.app}
       DEMO_PASSWORD: ${DEMO_PASSWORD:?DEMO_PASSWORD is required}
     depends_on:
       postgres:

@@ -16,20 +16,18 @@
   display: grid;
   place-items: center;
   align-content: center;
-  padding: 32px;
-  border: 1px solid #cfc4b5;
-  border-radius: var(--radius-surface);
+  padding: 52px 0;
   text-align: center;
 }
 
 .emptyState p {
   max-width: 520px;
   margin-bottom: 24px;
-  color: #6f665c;
+  color: var(--color-ink-muted);
 }
 
 .emptySigil {
   margin-bottom: 18px;
-  color: #aa6d1d;
-  font-size: 2rem;
+  color: var(--color-accent);
+  font-size: 2.6rem;
 }

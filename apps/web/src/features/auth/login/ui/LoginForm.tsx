@@ -1,6 +1,7 @@
 import {Button} from '@gravity-ui/uikit';
 
 import {TextField} from '../../../../shared/ui/form-fields';
+import {GuestLoginButton} from '../../guest-login/ui/GuestLoginButton';
 import {useLogin} from '../model/use-login';
 import styles from './LoginForm.module.css';
 
@@ -38,6 +39,7 @@ export function LoginForm({next}: LoginFormProps) {
       <Button view="action" size="xl" width="max" type="submit" loading={form.isPending} disabled={form.isPending}>
         Войти
       </Button>
+      <GuestLoginButton next={next} />
     </form>
   );
 }

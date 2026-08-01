@@ -4,6 +4,8 @@ const appEnvSchema = z.strictObject({
   APP_VERSION: z.string().trim().min(1).default('0.1.0'),
   APP_ORIGIN: z.string().url().default('http://localhost:5173'),
   DATABASE_URL: z.string().trim().min(1),
+  DEMO_EMAIL: z.string().trim().email().default('demo@tavern.app'),
+  DEMO_PASSWORD: z.string().min(8).optional(),
   ENABLE_DEMO_SEED: z
     .enum(['true', 'false', '1', '0'])
     .default('false')
@@ -24,6 +26,8 @@ export function parseAppEnv(
     APP_VERSION: source.APP_VERSION,
     APP_ORIGIN: source.APP_ORIGIN,
     DATABASE_URL: source.DATABASE_URL,
+    DEMO_EMAIL: source.DEMO_EMAIL,
+    DEMO_PASSWORD: source.DEMO_PASSWORD,
     ENABLE_DEMO_SEED: source.ENABLE_DEMO_SEED,
     HOST: source.HOST,
     JWT_SECRET: source.JWT_SECRET,

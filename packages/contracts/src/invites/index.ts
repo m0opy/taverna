@@ -1,5 +1,6 @@
 import { z } from 'zod';
 
+import { CAMPAIGN_MEMBER_LIMIT } from '../campaigns/index.js';
 import { coverKeySchema } from '../common/enums.js';
 import { membershipDtoSchema } from '../memberships/index.js';
 import {
@@ -13,7 +14,7 @@ export const invitePreviewDtoSchema = z.strictObject({
   title: trimmedString(2, 60),
   synopsis: z.string().max(500),
   coverKey: coverKeySchema,
-  membersCount: z.number().int().min(1).max(20),
+  membersCount: z.number().int().min(1).max(CAMPAIGN_MEMBER_LIMIT),
   ownerName: trimmedString(2, 40),
   isFull: z.boolean(),
 });

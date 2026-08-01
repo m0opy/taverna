@@ -2,7 +2,7 @@
 
 Документ конкретизирует [requirements.md](/Users/polinashchetkina/project/taverna/ai/docs/requirements.md:1) и фиксирует внешний контракт для `apps/web` и `apps/api`. Все request/response schemas живут в `packages/contracts`, валидируются общими Zod-схемами и должны совпадать с этим документом.
 
-> Статус: `GET /api/health`, auth, campaigns, invite preview/join, memberships, character update и Notes CRUD реализованы и проверены локально. NPC, guest/demo и часть campaign controls остаются следующими срезами; production smoke не выполнялся.
+> Статус: `GET /api/health`, auth, campaigns, invite preview/join, memberships, character update, Notes CRUD, NPC CRUD/relations и guest login реализованы. Production smoke не выполнялся.
 
 ## 1. Общие правила
 
@@ -255,6 +255,14 @@ type LoginRequest = {
 
 Ошибка: одинаковый `401 INVALID_CREDENTIALS` и для неизвестного email, и для неверного пароля.
 
+### `POST /auth/guest`
+
+Auth: public.
+
+Body отсутствует. Сервер использует `DEMO_EMAIL` и `DEMO_PASSWORD` из окружения, проверяет demo-пользователя через тот же password/session flow, что и обычный login, и возвращает `UserDto` с `Set-Cookie`.
+
+Если demo credentials не настроены, сервер возвращает `500 INTERNAL_ERROR`. Endpoint не возвращает пароль и не пишет credentials в логи.
+
 ### `POST /auth/logout`
 
 Auth: optional. Всегда `204`; cookie очищается, даже если уже истекла или невалидна.
@@ -309,6 +317,7 @@ type CreateCampaignRequest = {
 - `title`: `trim`, 2..60
 - `synopsis`: `trim`, max 500, отсутствие нормализуется в `''`
 - кампания и owner membership создаются атомарно
+- максимум 10 активных участников в кампании
 - лимит: максимум 20 кампаний у пользователя
 
 Ошибка: `409 CAMPAIGN_LIMIT_REACHED`

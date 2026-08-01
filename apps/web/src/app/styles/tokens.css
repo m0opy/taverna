@@ -1,4 +1,19 @@
 :root {
+  --color-bg: #f8f4ed;
+  --color-surface: #fffdf9;
+  --color-surface-muted: #f0e7da;
+  --color-ink: #2b211a;
+  --color-ink-muted: #75695e;
+  --color-ink-soft: #998b7c;
+  --color-line: #d8cab9;
+  --color-accent: #b87925;
+  --color-accent-strong: #8a5718;
+  --color-accent-soft: #f2e4ce;
+  --color-danger: #a24b37;
+  --color-focus: rgba(184, 121, 37, .24);
+  --content-width: 980px;
+  --page-gutter: 40px;
+  --page-padding: clamp(48px, 7vw, 88px);
   --radius-sm: 8px;
   --radius-control: 12px;
   --radius-surface: 16px;

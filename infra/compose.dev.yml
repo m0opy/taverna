@@ -43,6 +43,7 @@ services:
       APP_ORIGIN: http://localhost:5173
       APP_VERSION: dev-compose
       ENABLE_DEMO_SEED: ${ENABLE_DEMO_SEED:-false}
+      DEMO_EMAIL: ${DEMO_EMAIL:-demo@tavern.app}
       DEMO_PASSWORD: ${DEMO_PASSWORD:-local-demo-password}
     ports:
       - "3000:3000"

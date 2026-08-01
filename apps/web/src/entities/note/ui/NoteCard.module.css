@@ -28,14 +28,62 @@
   font-size: .78rem;
 }
 
-.body {
+.bodyWrap {
   max-width: 820px;
   margin-top: 18px;
+}
+
+.body {
+  max-width: 820px;
+  margin: 0;
   overflow-wrap: anywhere;
   color: #3f352b;
   line-height: 1.7;
   white-space: pre-wrap;
 }
+
+.bodyCollapsed {
+  max-height: 8.5em;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(to bottom, #000 0, #000 calc(100% - 36px), transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 0, #000 calc(100% - 36px), transparent 100%);
+  transition: max-height .35s ease;
+}
+
+.bodyExpanded .body {
+  max-height: 5000px;
+  transition: max-height .55s ease;
+}
+
+.expandButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 9px;
+  padding: 3px 0;
+  border: 0;
+  color: var(--color-accent-strong);
+  background: transparent;
+  cursor: pointer;
+  font-size: .82rem;
+  font-weight: 700;
+}
+
+.expandButton:hover { color: #623b13; }
+
+.expandButton:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+  border-radius: 3px;
+}
+
+.expandIcon {
+  width: 15px;
+  height: 15px;
+  transition: transform .25s ease;
+}
+
+.bodyExpanded .expandIcon { transform: rotate(180deg); }
 
 .actions {
   display: flex;
@@ -44,13 +92,22 @@
 }
 
 .action {
-  padding: 4px 0;
+  display: grid;
+  width: 32px;
+  height: 32px;
+  place-items: center;
+  padding: 0;
+  border-radius: 8px;
   border: 0;
   color: #8a5718;
   background: transparent;
   cursor: pointer;
-  font-size: .8rem;
   font-weight: 700;
+}
+
+.action svg {
+  width: 17px;
+  height: 17px;
 }
 
 .deleteAction {
@@ -58,11 +115,11 @@
 }
 
 .action:hover {
-  text-decoration: underline;
+  background: #f2e4ce;
 }
 
 .action:focus-visible {
-  outline: 3px solid #bd7924;
+  outline: 2px solid var(--color-accent);
   outline-offset: 3px;
   border-radius: 3px;
 }
@@ -70,6 +127,14 @@
 .action:disabled {
   cursor: wait;
   opacity: .55;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bodyCollapsed,
+  .bodyExpanded .body,
+  .expandIcon {
+    transition: none;
+  }
 }
 
 @media (max-width: 640px) {

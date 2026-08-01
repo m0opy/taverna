@@ -40,6 +40,20 @@ describe('notes UI', () => {
     expect(markup).toContain('Изменить');
   });
 
+  it('collapses long notes behind an explicit disclosure control', () => {
+    const markup = renderToStaticMarkup(
+      <NotesList
+        items={[noteFixture({body: 'Длинная запись о событиях сессии. '.repeat(20)})]}
+        onCreate={vi.fn()}
+        onDelete={vi.fn()}
+        onEdit={vi.fn()}
+      />,
+    );
+
+    expect(markup).toContain('Показать полностью');
+    expect(markup).toContain('aria-expanded="false"');
+  });
+
   it('renders an empty state and an editor for create and edit modes', () => {
     const empty = renderToStaticMarkup(
       <NotesList items={[]} onCreate={vi.fn()} onDelete={vi.fn()} onEdit={vi.fn()} />,

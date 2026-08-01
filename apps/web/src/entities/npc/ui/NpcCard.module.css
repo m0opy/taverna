@@ -1,0 +1,43 @@
+.card {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 16px;
+  padding: 22px;
+  border: 1px solid #d7cbbb;
+  border-radius: 16px;
+  background: #fffdf9;
+  box-shadow: 0 12px 28px rgba(56, 39, 22, 0.07);
+}
+
+.cardHeader {display: flex;align-items: flex-start;gap: 12px;min-width: 0;}
+.initials {display: grid;flex: 0 0 44px;place-items: center;width: 44px;height: 44px;color: #fff5e8;font-family: Georgia, serif;font-size: 1rem;background: #865b3c;border-radius: 50%;}
+.identity {min-width: 0;flex: 1;}
+.identity h2 {margin: 0;color: #261c15;font-size: 1.45rem;line-height: 1.05;overflow-wrap: anywhere;}
+.identity p {margin: 5px 0 0;color: #806d5d;overflow-wrap: anywhere;}
+.attitude {flex: 0 0 auto;padding: 5px 9px;border-radius: 999px;font-size: .72rem;font-weight: 700;white-space: nowrap;}
+.ally {color: #2e6b47;background: #e1f0e4;}
+.neutral {color: #85621c;background: #f7ecd1;}
+.enemy {color: #9d3f32;background: #f8dfd9;}
+.unknown {color: #655b52;background: #ebe6df;}
+.tags {display: flex;flex-wrap: wrap;gap: 6px;min-height: 25px;}
+.tag {padding: 4px 8px;color: #70522e;font-size: .78rem;background: #f1e8da;border-radius: 999px;}
+.notes {display: -webkit-box;min-height: 4.5em;margin: 0;color: #5d5147;line-height: 1.5;overflow: hidden;-webkit-box-orient: vertical;-webkit-line-clamp: 3;overflow-wrap: anywhere;}
+.relations {display: grid;gap: 7px;padding-top: 13px;border-top: 1px solid #eee5d9;color: #63574d;font-size: .85rem;}
+.relationsLabel {color: #a36e2d;font-size: .7rem;font-weight: 700;letter-spacing: .12em;text-transform: uppercase;}
+.relation {overflow-wrap: anywhere;}
+.noRelations {color: #9b8e81;font-style: italic;}
+.footer {display: flex;align-items: center;justify-content: space-between;gap: 12px;margin-top: auto;padding-top: 4px;}
+.author {min-width: 0;color: #9b8e81;font-size: .75rem;overflow-wrap: anywhere;}
+.actions {display: flex;flex-wrap: wrap;gap: 8px;}
+.actions button {display: grid;width: 32px;height: 32px;place-items: center;padding: 0;color: #855a2e;background: transparent;border: 0;border-radius: 8px;cursor: pointer;}
+.actions button svg {width: 17px;height: 17px;}
+.actions button:hover,.actions button:focus-visible {color: #4f321c;background: var(--color-accent-soft);}
+.actions button:disabled {color: #b7aa9a;cursor: wait;}
+
+@media (max-width: 560px) {
+  .card {padding: 18px;}
+  .cardHeader {flex-wrap: wrap;}
+  .attitude {margin-left: 56px;}
+  .footer {align-items: flex-start;flex-direction: column;}
+}

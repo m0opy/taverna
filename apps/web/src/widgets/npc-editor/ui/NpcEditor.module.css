@@ -1,0 +1,33 @@
+.backdrop {position: fixed;z-index: 10;inset: 0;display: grid;place-items: center;padding: 24px;background: rgba(33, 24, 17, .58);overflow-y: auto;}
+.dialog {width: min(680px, 100%);max-height: min(860px, calc(100vh - 48px));padding: 28px;color: #2d211a;background: #fffaf3;border: 1px solid #ddcdbc;border-radius: 18px;box-shadow: 0 26px 80px rgba(33, 20, 10, .3);overflow-y: auto;}
+.heading {display: flex;align-items: flex-start;justify-content: space-between;gap: 18px;margin-bottom: 24px;}
+.heading h2 {margin: 0;color: #241a14;font-size: 2rem;}
+.eyebrow {margin: 0 0 6px;color: #a36e2d;font-size: .7rem;font-weight: 700;letter-spacing: .15em;text-transform: uppercase;}
+.close {width: 32px;height: 32px;color: #72563e;font-size: 1.5rem;line-height: 1;background: transparent;border: 0;cursor: pointer;border-radius: 50%;}
+.close:hover,.close:focus-visible {background: #f0e5d7;}
+.form {display: grid;gap: 18px;}
+.field {display: grid;gap: 7px;min-width: 0;color: #5e4b3e;font-weight: 700;}
+.field input,.field textarea {width: 100%;padding: 11px 12px;color: #2d211a;background: #fff;border: 1px solid #cfc1b1;border-radius: 9px;resize: vertical;}
+.field > input:focus-visible,.field > textarea:focus-visible,.tagInput:focus-within,.attitudeOption:has(input:focus-visible),.selectedAttitude:has(input:focus-visible) {outline: 2px solid var(--color-focus);outline-offset: 2px;}
+.field small {color: #a44335;font-weight: 400;}
+.counter {justify-self: end;color: #988a7b !important;font-size: .75rem;}
+.attitudes {display: grid;gap: 8px;padding: 0;border: 0;}
+.attitudes legend {margin-bottom: 0;color: #5e4b3e;font-weight: 700;}
+.attitudeOptions {display: grid;grid-template-columns: repeat(4, 1fr);gap: 7px;}
+.attitudeOption,.selectedAttitude {position: relative;display: grid;place-items: center;min-height: 42px;padding: 8px;color: #77685b;font-size: .82rem;border: 1px solid #d4c5b4;border-radius: 8px;cursor: pointer;}
+.selectedAttitude {color: #72461f;background: #f4e8d7;border-color: #b77a35;}
+.attitudeOption input,.selectedAttitude input {position: absolute;opacity: 0;}
+.tagInput {display: grid;gap: 8px;padding: 9px;background: #fff;border: 1px solid #cfc1b1;border-radius: 9px;}
+.tagInput:focus-within {border-color: var(--color-accent);box-shadow: 0 0 0 2px var(--color-focus);}
+.tagInput > input,.tagInput > input:focus,.tagInput > input:focus-visible {padding: 5px 2px;border: 0;outline: 0;box-shadow: none;}
+.tagList {display: flex;flex-wrap: wrap;gap: 6px;}
+.tag {display: inline-flex;align-items: center;gap: 5px;padding: 5px 8px;color: #70522e;font-size: .78rem;background: #f1e8da;border-radius: 999px;}
+.tag button {width: 18px;height: 18px;padding: 0;color: #815a37;background: transparent;border: 0;border-radius: 50%;cursor: pointer;}
+.error {margin: 0;padding: 10px 12px;color: #9d3f32;background: #f8dfd9;border-radius: 8px;}
+.actions {display: flex;flex-wrap: wrap;gap: 10px;padding-top: 4px;}
+
+@media (max-width: 560px) {
+  .backdrop {align-items: start;padding: 12px;}
+  .dialog {max-height: calc(100vh - 24px);padding: 22px 18px;}
+  .attitudeOptions {grid-template-columns: repeat(2, 1fr);}
+}

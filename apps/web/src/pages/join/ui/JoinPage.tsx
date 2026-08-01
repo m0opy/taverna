@@ -1,4 +1,5 @@
 import {Button} from '@gravity-ui/uikit';
+import {CAMPAIGN_MEMBER_LIMIT} from '@taverna/contracts';
 import {useNavigate, useParams} from 'react-router-dom';
 
 import {JoinCampaignForm} from '../../../features/campaign/join/ui/JoinCampaignForm';
@@ -31,7 +32,7 @@ export function JoinPage() {
       <p className={styles.eyebrow}>Приглашение от {data.ownerName}</p>
       <h1>{data.title}</h1>
       <p>{data.synopsis || 'Вас приглашают присоединиться к новой истории.'}</p>
-      <div className={styles.facts}><span>{data.membersCount}/20 участников</span><span>{data.coverKey}</span></div>
+      <div className={styles.facts}><span>{data.membersCount} из {CAMPAIGN_MEMBER_LIMIT} участников</span><span>{data.coverKey}</span></div>
       {data.isFull ? (
         <div className={styles.formError}><strong>За столом нет свободных мест</strong><p>Попросите мастера освободить место и попробуйте снова.</p></div>
       ) : flow.isGuest ? (

@@ -9,12 +9,14 @@ import {
   uuidSchema,
 } from '../common/validators.js';
 
+export const CAMPAIGN_MEMBER_LIMIT = 10;
+
 export const campaignSummaryDtoSchema = z.strictObject({
   id: uuidSchema,
   title: trimmedString(2, 60),
   coverKey: coverKeySchema,
   nextSessionAt: z.union([calendarDateSchema, z.null()]),
-  membersCount: z.number().int().min(1).max(20),
+  membersCount: z.number().int().min(1).max(CAMPAIGN_MEMBER_LIMIT),
   myRole: campaignRoleSchema,
 });
 
@@ -23,7 +25,7 @@ export const campaignDetailDtoSchema = campaignSummaryDtoSchema.extend({
   ownerId: uuidSchema,
   inviteUrl: z.union([z.string().url(), z.null()]),
   myMembershipId: uuidSchema,
-  members: z.array(membershipDtoSchema).max(20),
+  members: z.array(membershipDtoSchema).max(CAMPAIGN_MEMBER_LIMIT),
   createdAt: isoTimestampSchema,
 });
 

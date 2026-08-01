@@ -58,6 +58,8 @@ describe('campaign detail', () => {
     expect(markup).toContain('Полина');
     expect(markup).toContain('Лорас');
     expect(markup).toContain('Бард · Алексей');
+    expect(markup).not.toContain('Раскрыть предысторию');
+    expect(markup).not.toContain('Показать предысторию');
   });
 
   it('keeps forbidden and not-found states distinct', () => {

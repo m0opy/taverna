@@ -1,9 +1,10 @@
 .card {
-  min-height: 230px;
+  min-height: 236px;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  padding: 28px;
+  gap: 8px;
+  padding: 30px;
   overflow: hidden;
   border-radius: var(--radius-surface);
   color: #fff6e8;
@@ -18,13 +19,19 @@
 }
 
 .card h2 {
-  margin: 10px 0;
+  max-width: 15ch;
+  margin: 6px 0 2px;
   font-size: 2rem;
+  line-height: 1.06;
+  letter-spacing: -.025em;
+  overflow-wrap: anywhere;
+  text-wrap: balance;
 }
 
 .card p {
   margin: 0;
   color: #eee2d2;
+  line-height: 1.45;
 }
 
 .eyebrow {

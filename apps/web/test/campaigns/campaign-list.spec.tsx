@@ -28,7 +28,7 @@ describe('campaign list', () => {
 
     expect(markup).toContain('Пепел Северной башни');
     expect(markup).toContain('href="/c/campaign-1"');
-    expect(markup).toContain('Мастер · 1 участников');
+    expect(markup).toContain('Мастер · 1 участник');
   });
 
   it('renders the empty state without campaign cards', () => {

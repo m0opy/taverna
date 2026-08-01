@@ -3,29 +3,29 @@
   gap: 28px;
   margin-bottom: 36px;
   overflow-x: auto;
-  border-bottom: 1px solid #cfc4b5;
+  border-bottom: 1px solid var(--color-line);
 }
 
 .item {
   padding: 12px 2px;
   border-bottom: 2px solid transparent;
-  color: #665d53;
+  color: var(--color-ink-muted);
   text-decoration: none;
   white-space: nowrap;
   transition: color .15s ease, border-color .15s ease;
 }
 
 .item:hover {
-  color: #513812;
+  color: var(--color-accent-strong);
 }
 
 .active {
-  border-bottom-color: #b87925;
-  color: #8a5718;
+  border-bottom-color: var(--color-accent);
+  color: var(--color-accent-strong);
 }
 
 .item:focus-visible {
-  outline: 3px solid #bd7924;
+  outline: 2px solid var(--color-accent);
   outline-offset: 3px;
 }
 

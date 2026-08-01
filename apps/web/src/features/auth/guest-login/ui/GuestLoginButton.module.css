@@ -1,0 +1,5 @@
+.container {display: grid;gap: 10px;margin-top: 18px;}
+.divider {display: flex;align-items: center;gap: 10px;color: #9d9081;font-size: .78rem;}
+.divider::before,.divider::after {height: 1px;flex: 1;content: '';background: #4a3e34;}
+.hint {margin: 0;color: #a99f91;font-size: .78rem;line-height: 1.5;text-align: center;}
+.error {margin: 0;color: #ef9b89;font-size: .82rem;text-align: center;}

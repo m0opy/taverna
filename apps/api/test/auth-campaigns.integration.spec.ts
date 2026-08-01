@@ -23,6 +23,8 @@ suite('Task 002 auth and campaign integration', () => {
       APP_ORIGIN: 'http://localhost:5173',
       APP_VERSION: 'task-002-test',
       DATABASE_URL: databaseUrl!,
+      DEMO_EMAIL: 'guest@example.com',
+      DEMO_PASSWORD: 'strong-password',
       ENABLE_DEMO_SEED: false,
       HOST: '127.0.0.1',
       JWT_SECRET: 'integration-secret-integration-secret-123',
@@ -74,6 +76,15 @@ suite('Task 002 auth and campaign integration', () => {
     expect(String(logout.headers['set-cookie'])).toContain('Max-Age=0');
   });
 
+  it('logs into the configured demo account through the guest flow', async () => {
+    await register('Демо-гость', 'guest@example.com');
+
+    const guestLogin = await app.inject({method: 'POST', url: '/api/auth/guest'});
+    expect(guestLogin.statusCode).toBe(200);
+    expect(guestLogin.json()).toMatchObject({name: 'Демо-гость', email: 'guest@example.com'});
+    expect(String(guestLogin.headers['set-cookie'])).toContain('taverna_session=');
+  });
+
   it('creates campaign with owner membership and forbids an outsider', async () => {
     const owner = await register('Мастер', 'master@example.com');
     const created = await app.inject({method: 'POST', url: '/api/campaigns', headers: {cookie: owner.cookie}, payload: {title: 'Красный тракт', synopsis: 'Дорога зовёт', coverKey: 'forest'}});
@@ -115,5 +126,45 @@ suite('Task 002 auth and campaign integration', () => {
     const detail = await app.inject({method: 'GET', url: `/api/campaigns/${campaign.id}`, headers: {cookie: player.cookie}});
     expect(detail.statusCode).toBe(200);
     expect(detail.json()).toMatchObject({myRole: 'player', inviteUrl: null, membersCount: 2});
+  });
+
+  it('lets only the owner update campaign fields and rotate an invite', async () => {
+    const owner = await register('Мастер', 'owner-settings@example.com');
+    const created = await app.inject({method: 'POST', url: '/api/campaigns', headers: {cookie: owner.cookie}, payload: {title: 'Старая башня', coverKey: 'forest'}});
+    const campaign = created.json();
+    const oldToken = new URL(campaign.inviteUrl).pathname.split('/').pop()!;
+    const player = await register('Игрок', 'player-settings@example.com');
+    await app.inject({method: 'POST', url: `/api/invites/${oldToken}/join`, headers: {cookie: player.cookie}, payload: {characterName: 'Мира'}});
+
+    const forbidden = await app.inject({method: 'PATCH', url: `/api/campaigns/${campaign.id}`, headers: {cookie: player.cookie}, payload: {title: 'Нельзя'}});
+    expect(forbidden.statusCode).toBe(403);
+    const invalidDate = await app.inject({method: 'PATCH', url: `/api/campaigns/${campaign.id}`, headers: {cookie: owner.cookie}, payload: {nextSessionAt: '2026-02-30'}});
+    expect(invalidDate.statusCode).toBe(400);
+    const updated = await app.inject({method: 'PATCH', url: `/api/campaigns/${campaign.id}`, headers: {cookie: owner.cookie}, payload: {title: 'Новая башня', synopsis: 'Туман', coverKey: 'city', nextSessionAt: '2026-08-12'}});
+    expect(updated.statusCode).toBe(200);
+    expect(updated.json()).toMatchObject({title: 'Новая башня', nextSessionAt: '2026-08-12'});
+    const cleared = await app.inject({method: 'PATCH', url: `/api/campaigns/${campaign.id}`, headers: {cookie: owner.cookie}, payload: {nextSessionAt: null}});
+    expect(cleared.json().nextSessionAt).toBeNull();
+
+    const rotated = await app.inject({method: 'POST', url: `/api/campaigns/${campaign.id}/invite/rotate`, headers: {cookie: owner.cookie}});
+    expect(rotated.statusCode).toBe(200);
+    expect(await app.inject({method: 'GET', url: `/api/invites/${oldToken}`})).toMatchObject({statusCode: 404});
+  });
+
+  it('records player leave, lets owner remove a player and requires exact campaign deletion confirmation', async () => {
+    const owner = await register('Мастер', 'owner-members@example.com');
+    const created = await app.inject({method: 'POST', url: '/api/campaigns', headers: {cookie: owner.cookie}, payload: {title: 'Лунный путь', coverKey: 'sea'}});
+    const campaign = created.json();
+    const token = new URL(campaign.inviteUrl).pathname.split('/').pop()!;
+    const player = await register('Игрок', 'player-members@example.com');
+    const join = await app.inject({method: 'POST', url: `/api/invites/${token}/join`, headers: {cookie: player.cookie}, payload: {characterName: 'Лис'}});
+    const membershipId = join.json().membership.id;
+    expect((await app.inject({method: 'DELETE', url: `/api/campaigns/${campaign.id}/members/${membershipId}`, headers: {cookie: player.cookie}})).statusCode).toBe(204);
+    expect(await database.prisma.membership.findUnique({where: {id: membershipId}})).toMatchObject({leftAt: expect.any(Date)});
+    const ownerLeave = await app.inject({method: 'DELETE', url: `/api/campaigns/${campaign.id}/members/${campaign.myMembershipId}`, headers: {cookie: owner.cookie}});
+    expect(ownerLeave.statusCode).toBe(403);
+    const wrong = await app.inject({method: 'DELETE', url: `/api/campaigns/${campaign.id}`, headers: {cookie: owner.cookie}, payload: {confirmationTitle: 'Не то'}});
+    expect(wrong.statusCode).toBe(400);
+    expect((await app.inject({method: 'DELETE', url: `/api/campaigns/${campaign.id}`, headers: {cookie: owner.cookie}, payload: {confirmationTitle: 'Лунный путь'}})).statusCode).toBe(204);
   });
 });

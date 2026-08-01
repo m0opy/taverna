@@ -1,0 +1,93 @@
+.page {
+  display: grid;
+  gap: 28px;
+}
+
+.eyebrow {
+  margin: 0;
+  color: var(--color-accent-strong);
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+}
+
+.section {
+  display: grid;
+  gap: 18px;
+  padding: clamp(24px, 3vw, 36px);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-surface);
+  background: var(--color-surface-muted);
+}
+
+.section h2 { margin: -8px 0 0; }
+
+.form {
+  display: grid;
+  gap: 20px;
+  max-width: 760px;
+}
+
+.form label,
+.section label {
+  display: grid;
+  gap: 8px;
+  color: var(--color-ink-muted);
+  font-weight: 700;
+}
+
+.form input,
+.form textarea,
+.form select {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 46px;
+  padding: 11px 13px;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-control);
+  color: var(--color-ink);
+  background: #fff;
+  font: inherit;
+}
+
+.form textarea { min-height: 128px; resize: vertical; }
+
+.primary,
+.secondary {
+  min-height: 44px;
+  padding: 10px 17px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-control);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.primary { justify-self: start; color: #fff; background: var(--color-accent-strong); }
+.secondary { border-color: var(--color-line); color: var(--color-ink); background: #fff8f0; }
+.dateEditor {
+  max-width: 760px;
+  margin-top: 6px;
+  padding-top: 24px;
+  border-top: 1px solid var(--color-line);
+}
+.inviteUrl { margin: 0; padding: 13px 14px; overflow-wrap: anywhere; border-radius: var(--radius-control); background: #f4e9de; }
+.actions { display: flex; flex-wrap: wrap; gap: 12px; }
+.error { margin: 0; color: var(--color-danger); }
+
+.form input:focus-visible,
+.form textarea:focus-visible,
+.form select:focus-visible,
+.primary:focus-visible,
+.secondary:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; }
+
+.primary:disabled,
+.secondary:disabled,
+.form :disabled { cursor: wait; opacity: .6; }
+
+@media (max-width: 520px) {
+  .page { gap: 20px; }
+  .section { gap: 16px; padding: 22px 18px; }
+  .primary, .secondary { width: 100%; }
+}

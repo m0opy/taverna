@@ -12,6 +12,7 @@
     "typecheck": "tsc -b --noEmit"
   },
   "dependencies": {
+    "@gravity-ui/icons": "2.21.0",
     "@gravity-ui/uikit": "7.47.1",
     "@tanstack/react-query": "5.101.4",
     "@taverna/contracts": "workspace:*",

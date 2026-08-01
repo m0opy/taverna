@@ -12,8 +12,8 @@
 | Campaigns | реализовано частично | создание, просмотр, memberships, invites и join flow доступны |
 | Character update | реализовано | участник может изменить имя персонажа через campaign membership flow |
 | Notes | MVP срез закрыт локально | контракт, API CRUD, права, frontend Notes page и локальный owner/player smoke проверены; production не проверен |
-| NPC | следующий срез | целевой контракт есть, CRUD и relations ещё нужно закрыть |
-| Guest/demo seed | запланировано | не считать готовым до ручного smoke в чистом браузере |
+| NPC | реализован локально | CRUD, tags/filter, relations и permissions добавлены; integration/smoke требуют release-проверки |
+| Guest/demo seed | реализован локально | идемпотентный seed и guest endpoint добавлены; не считать готовым до ручного smoke в чистом браузере |
 | Production | не проверено | VPS, домен, HTTPS и автоматический deploy не считать настроенными |
 
 Текущая цель до feature freeze: закрыть Notes, затем NPC/demo, затем пройти release gate. Не расширять MVP параллельными экспериментами со стеком.

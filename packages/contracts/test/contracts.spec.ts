@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import {
   errorResponseSchema,
+  campaignSummaryDtoSchema,
   joinCampaignRequestSchema,
   loginRequestSchema,
   npcWriteRequestSchema,
@@ -54,6 +55,19 @@ describe('contracts', () => {
 
   it('requires non-empty partial campaign updates', () => {
     expect(() => updateCampaignRequestSchema.parse({})).toThrow();
+  });
+
+  it('limits campaigns to ten active participants in the shared contract', () => {
+    const summary = {
+      id: '00000000-0000-4000-8000-000000000001',
+      title: 'Тихая гавань',
+      coverKey: 'tavern' as const,
+      nextSessionAt: null,
+      myRole: 'master' as const,
+    };
+
+    expect(campaignSummaryDtoSchema.parse({...summary, membersCount: 10}).membersCount).toBe(10);
+    expect(() => campaignSummaryDtoSchema.parse({...summary, membersCount: 11})).toThrow();
   });
 
   it('deduplicates npc tags and normalizes empty strings', () => {

@@ -1,4 +1,6 @@
 import type {NoteDto} from '@taverna/contracts';
+import {ChevronDown, PencilToSquare, TrashBin} from '@gravity-ui/icons';
+import {useState} from 'react';
 
 import {formatNoteTimestamp, noteAuthorLabel} from '../model/presentation';
 import styles from './NoteCard.module.css';
@@ -12,6 +14,8 @@ interface NoteCardProps {
 
 export function NoteCard({isDeleting = false, note, onDelete, onEdit}: NoteCardProps) {
   const isEdited = note.updatedAt !== note.createdAt;
+  const isCollapsible = note.body.length > 360;
+  const [isExpanded, setIsExpanded] = useState(false);
 
   return (
     <article className={styles.card}>
@@ -28,24 +32,40 @@ export function NoteCard({isDeleting = false, note, onDelete, onEdit}: NoteCardP
         {(note.canEdit || note.canDelete) && (
           <div className={styles.actions}>
             {note.canEdit && (
-              <button className={styles.action} type="button" onClick={() => onEdit(note)}>
-                Изменить
+              <button aria-label="Изменить заметку" className={styles.action} title="Изменить заметку" type="button" onClick={() => onEdit(note)}>
+                <PencilToSquare aria-hidden="true" />
               </button>
             )}
             {note.canDelete && (
               <button
+                aria-label={isDeleting ? 'Удаление заметки' : 'Удалить заметку'}
                 className={`${styles.action} ${styles.deleteAction}`}
                 type="button"
+                title="Удалить заметку"
                 disabled={isDeleting}
                 onClick={() => onDelete(note)}
               >
-                {isDeleting ? 'Удаляем…' : 'Удалить'}
+                <TrashBin aria-hidden="true" />
               </button>
             )}
           </div>
         )}
       </header>
-      <p className={styles.body}>{note.body}</p>
+      <div className={`${styles.bodyWrap} ${isCollapsible && isExpanded ? styles.bodyExpanded : ''}`}>
+        <p className={`${styles.body} ${isCollapsible && !isExpanded ? styles.bodyCollapsed : ''}`} id={`note-body-${note.id}`}>{note.body}</p>
+        {isCollapsible && (
+          <button
+            aria-controls={`note-body-${note.id}`}
+            aria-expanded={isExpanded}
+            className={styles.expandButton}
+            type="button"
+            onClick={() => setIsExpanded((expanded) => !expanded)}
+          >
+            <span>{isExpanded ? 'Свернуть заметку' : 'Показать полностью'}</span>
+            <ChevronDown aria-hidden="true" className={styles.expandIcon} />
+          </button>
+        )}
+      </div>
     </article>
   );
 }

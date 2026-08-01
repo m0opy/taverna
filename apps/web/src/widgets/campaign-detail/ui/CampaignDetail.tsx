@@ -58,7 +58,7 @@ export function CampaignDetailView({campaign, id, section}: {campaign: CampaignD
     <main className={`${styles.page} ${styles.campaignPage}`}>
       <header className={styles.heading}>
         <div>
-          <p className={styles.eyebrow}>Кампания</p>
+          <p className={styles.eyebrow}>Кампания · {campaign.title}</p>
           <h1>{campaign.title}</h1>
         </div>
         <Badge>{isOwner ? 'Мастер' : 'Участник'}</Badge>
@@ -72,7 +72,7 @@ export function CampaignDetailView({campaign, id, section}: {campaign: CampaignD
         </section>
       ) : (
         <>
-          <CampaignOverview coverKey={campaign.coverKey} nextSessionAt={campaign.nextSessionAt} synopsis={campaign.synopsis} />
+          <CampaignOverview campaignId={id} coverKey={campaign.coverKey} isOwner={isOwner} nextSessionAt={campaign.nextSessionAt} synopsis={campaign.synopsis} />
           <div className={styles.columns}>
             <CampaignMembers members={campaign.members} membersCount={campaign.membersCount} />
             <CampaignInvitePanel inviteUrl={campaign.inviteUrl} />
