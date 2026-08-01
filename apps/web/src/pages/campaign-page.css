@@ -1,0 +1,4 @@
+.campaign-heading {display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin-bottom:30px;}
+.campaign-columns {display:grid;grid-template-columns:minmax(0,1.25fr) minmax(300px,.75fr);gap:40px;margin-top:48px;align-items:start;}
+.campaign-section-placeholder {min-height:300px;padding:clamp(32px,5vw,52px);border:1px solid #c9bdad;border-radius:var(--radius-surface);background:#eee6da;}.campaign-section-placeholder h2 {margin:9px 0 12px;}.campaign-section-placeholder>p:last-child {color:#655c52;}
+@media (max-width: 640px) {.campaign-heading {align-items:flex-start;flex-direction:column;gap:14px;}.campaign-columns {grid-template-columns:1fr;gap:30px;margin-top:34px;}}

@@ -1,0 +1,111 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum NpcAttitude {
+  ally
+  neutral
+  enemy
+  unknown
+
+  @@map("npc_attitude")
+}
+
+model User {
+  id           String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name         String       @db.VarChar(40)
+  email        String       @unique(map: "users_email_uk") @db.VarChar(254)
+  passwordHash String       @map("password_hash")
+  createdAt    DateTime     @default(now()) @map("created_at") @db.Timestamptz(3)
+  campaigns    Campaign[]   @relation("CampaignOwner")
+  memberships  Membership[]
+
+  @@map("users")
+}
+
+model Campaign {
+  id            String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  title         String       @db.VarChar(60)
+  synopsis      String       @default("") @db.VarChar(500)
+  coverKey      String       @map("cover_key") @db.VarChar(16)
+  inviteToken   String       @unique(map: "campaigns_invite_token_uk") @map("invite_token") @db.Char(12)
+  nextSessionAt DateTime?    @map("next_session_at") @db.Date
+  ownerId       String       @map("owner_id") @db.Uuid
+  createdAt     DateTime     @default(now()) @map("created_at") @db.Timestamptz(3)
+  owner         User         @relation("CampaignOwner", fields: [ownerId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  memberships   Membership[]
+  notes         Note[]
+  npcs          Npc[]
+
+  @@index([ownerId], map: "campaigns_owner_idx")
+  @@map("campaigns")
+}
+
+model Membership {
+  id             String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId         String     @map("user_id") @db.Uuid
+  campaignId     String     @map("campaign_id") @db.Uuid
+  characterName  String?    @map("character_name") @db.VarChar(40)
+  characterClass String?    @map("character_class") @db.VarChar(60)
+  characterInfo  String?    @map("character_info") @db.VarChar(300)
+  joinedAt       DateTime   @default(now()) @map("joined_at") @db.Timestamptz(3)
+  leftAt         DateTime?  @map("left_at") @db.Timestamptz(3)
+  user           User       @relation(fields: [userId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  campaign       Campaign   @relation(fields: [campaignId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  notes          Note[]
+  npcs           Npc[]
+
+  @@map("memberships")
+}
+
+model Note {
+  id          String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  campaignId  String      @map("campaign_id") @db.Uuid
+  authorId    String      @map("author_id") @db.Uuid
+  body        String
+  sessionDate DateTime?   @map("session_date") @db.Date
+  createdAt   DateTime    @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt   DateTime    @updatedAt @map("updated_at") @db.Timestamptz(3)
+  campaign    Campaign    @relation(fields: [campaignId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  author      Membership  @relation(fields: [authorId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  @@index([campaignId, sessionDate(sort: Desc), createdAt(sort: Desc)], map: "notes_campaign_session_created_idx")
+  @@map("notes")
+}
+
+model Npc {
+  id                String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  campaignId        String         @map("campaign_id") @db.Uuid
+  createdById       String         @map("created_by_id") @db.Uuid
+  name              String         @db.VarChar(60)
+  title             String         @default("") @db.VarChar(60)
+  attitude          NpcAttitude    @default(unknown)
+  tags              String[]       @default([])
+  notes             String         @default("") @db.VarChar(1000)
+  createdAt         DateTime       @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt         DateTime       @updatedAt @map("updated_at") @db.Timestamptz(3)
+  campaign          Campaign       @relation(fields: [campaignId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  createdBy         Membership     @relation(fields: [createdById], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  outgoingRelations NpcRelation[]  @relation("NpcRelationFrom")
+  incomingRelations NpcRelation[]  @relation("NpcRelationTo")
+
+  @@index([campaignId, updatedAt(sort: Desc)], map: "npcs_campaign_updated_idx")
+  @@map("npcs")
+}
+
+model NpcRelation {
+  id        String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  fromNpcId String  @map("from_npc_id") @db.Uuid
+  toNpcId   String  @map("to_npc_id") @db.Uuid
+  label     String  @db.VarChar(60)
+  fromNpc   Npc     @relation("NpcRelationFrom", fields: [fromNpcId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  toNpc     Npc     @relation("NpcRelationTo", fields: [toNpcId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@index([fromNpcId], map: "npc_relations_from_idx")
+  @@index([toNpcId], map: "npc_relations_to_idx")
+  @@map("npc_relations")
+}

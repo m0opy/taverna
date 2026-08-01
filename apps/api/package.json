@@ -1,0 +1,41 @@
+{
+  "name": "@taverna/api",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "npm run db:generate && tsc -p tsconfig.json",
+    "db:deploy": "XDG_CACHE_HOME=./.cache prisma migrate deploy",
+    "db:generate": "DATABASE_URL=${DATABASE_URL:-postgresql://postgres:postgres@localhost:5432/taverna} XDG_CACHE_HOME=./.cache prisma generate",
+    "db:migrate": "XDG_CACHE_HOME=./.cache prisma migrate dev",
+    "db:seed": "node prisma/seed.mjs",
+    "dev": "tsx watch src/server.ts",
+    "lint": "npm run db:generate && tsc -p tsconfig.json --noEmit",
+    "start": "node dist/server.js",
+    "test": "vitest run",
+    "typecheck": "npm run db:generate && tsc -p tsconfig.json --noEmit"
+  },
+  "prisma": {
+    "seed": "node prisma/seed.mjs"
+  },
+  "dependencies": {
+    "@fastify/cookie": "11.1.2",
+    "@fastify/jwt": "10.2.1",
+    "@fastify/rate-limit": "11.1.0",
+    "@prisma/adapter-pg": "7.9.0",
+    "@prisma/client": "7.9.0",
+    "@taverna/contracts": "workspace:*",
+    "argon2": "0.45.1",
+    "fastify": "5.10.0",
+    "pg": "8.22.0",
+    "zod": "4.4.3"
+  },
+  "devDependencies": {
+    "@types/node": "24.9.1",
+    "@types/pg": "8.15.6",
+    "prisma": "7.9.0",
+    "tsx": "4.23.1",
+    "typescript": "5.9.3",
+    "vitest": "4.1.10"
+  }
+}

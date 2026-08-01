@@ -1,0 +1,67 @@
+.form-field {
+  display: grid;
+  gap: 8px;
+  font-size: .86rem;
+  font-weight: 650;
+  letter-spacing: .025em;
+}
+
+.form-field--light {color: #2b251f;}
+.form-field--dark {color: #d8cbbb;}
+
+.form-field__hint {
+  justify-self: end;
+  color: #685f55;
+  font-size: .82rem;
+  font-weight: 400;
+}
+
+.form-field--dark .form-field__hint {color: #a99f91;}
+
+.form-field__text-input.g-text-input {
+  --g-text-input-text-color: #231e18;
+  --g-text-input-placeholder-color: #756b60;
+  --g-text-input-background-color: #fffdf8;
+  --g-text-input-border-color: #a79b8c;
+  --g-text-input-border-color-hover: #6f6254;
+  --g-text-input-border-color-active: #96601c;
+  --g-text-input-focus-outline-color: rgba(150, 96, 28, .2);
+}
+
+.form-field--dark .form-field__text-input.g-text-input {
+  --g-text-input-text-color: #fff8ee;
+  --g-text-input-placeholder-color: #91877c;
+  --g-text-input-background-color: #2d3038;
+  --g-text-input-border-color: #5e626d;
+  --g-text-input-border-color-hover: #8a8f9b;
+  --g-text-input-border-color-active: #e0ad5b;
+  --g-text-input-focus-outline-color: rgba(224, 173, 91, .24);
+}
+
+.form-field__text-input .g-text-input__content,
+.form-field__text-input .g-text-input__control,
+.form-field__textarea {
+  border-radius: var(--radius-control);
+}
+
+.form-field__textarea {
+  width: 100%;
+  padding: 13px 14px;
+  resize: vertical;
+  border: 1px solid #a99f91;
+  outline: none;
+  color: #231e18;
+  background: #fffdf8;
+}
+
+.form-field__textarea:hover {border-color: #6f6254;}
+.form-field__textarea:focus {border-color: #b87925;box-shadow: 0 0 0 3px rgba(184,121,37,.2);}
+
+.form-field--dark .form-field__textarea {
+  color: #fff8ee;
+  border-color: #5e626d;
+  background: #2d3038;
+}
+
+.form-field--dark .form-field__textarea:hover {border-color: #8a8f9b;}
+.form-field--dark .form-field__textarea:focus {border-color: #e0ad5b;box-shadow: 0 0 0 3px rgba(224,173,91,.24);}

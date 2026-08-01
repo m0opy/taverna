@@ -1,0 +1,57 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:18-bookworm
+        env:
+          POSTGRES_DB: taverna_test
+          POSTGRES_USER: taverna
+          POSTGRES_PASSWORD: taverna
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U taverna -d taverna_test"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
+    env:
+      NODE_ENV: test
+      DATABASE_URL: postgresql://taverna:taverna@127.0.0.1:5432/taverna_test?schema=public
+      JWT_SECRET: test-secret-at-least-32-characters-long
+      APP_ORIGIN: http://localhost:5173
+      APP_VERSION: ${{ github.sha }}
+      ENABLE_DEMO_SEED: "false"
+      DEMO_PASSWORD: test-demo-password
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.18.0
+          run_install: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24.18.0
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm db:generate
+      - run: pnpm --filter @taverna/api db:deploy
+      - run: pnpm lint
+      - run: pnpm typecheck
+      - run: pnpm test
+      - run: pnpm build

@@ -1,0 +1,3 @@
+.join-panel {width:min(100%,620px);}
+.invite-facts {display:flex;gap:12px;color:#b9aa97;margin:22px 0;}
+.invite-facts span {padding:7px 10px;border:1px solid #514337;border-radius:var(--radius-control);}

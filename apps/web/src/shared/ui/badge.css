@@ -1,0 +1,24 @@
+.badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 5px 10px;
+  border: 1px solid #b9a98f;
+  border-radius: var(--radius-pill);
+  color: #62451f;
+  background: #ede2d2;
+  font-size: .78rem;
+  font-weight: 700;
+  letter-spacing: .04em;
+  white-space: nowrap;
+}
+
+.badge--small {
+  min-height: 0;
+  padding: 2px 7px;
+  color: #704812;
+  background: #ead8ba;
+  font-size: .68rem;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}

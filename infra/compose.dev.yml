@@ -1,0 +1,72 @@
+name: taverna-dev
+
+services:
+  postgres:
+    image: postgres:18-bookworm
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-taverna}
+      POSTGRES_USER: ${POSTGRES_USER:-taverna}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-taverna}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_dev_data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  migrate:
+    build:
+      context: ..
+      dockerfile: apps/api/Dockerfile
+      target: development
+    command: ["pnpm", "--filter", "@taverna/api", "db:deploy"]
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-taverna}:${POSTGRES_PASSWORD:-taverna}@postgres:5432/${POSTGRES_DB:-taverna}?schema=public
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  api:
+    build:
+      context: ..
+      dockerfile: apps/api/Dockerfile
+      target: development
+    environment:
+      NODE_ENV: development
+      PORT: 3000
+      LOG_LEVEL: debug
+      DATABASE_URL: postgresql://${POSTGRES_USER:-taverna}:${POSTGRES_PASSWORD:-taverna}@postgres:5432/${POSTGRES_DB:-taverna}?schema=public
+      JWT_SECRET: ${JWT_SECRET:-development-only-secret-at-least-32-characters}
+      APP_ORIGIN: http://localhost:5173
+      APP_VERSION: dev-compose
+      ENABLE_DEMO_SEED: ${ENABLE_DEMO_SEED:-false}
+      DEMO_PASSWORD: ${DEMO_PASSWORD:-local-demo-password}
+    ports:
+      - "3000:3000"
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/api/health').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+
+  web:
+    build:
+      context: ..
+      dockerfile: apps/web/Dockerfile
+      target: development
+    environment:
+      VITE_API_PROXY_TARGET: http://api:3000
+    ports:
+      - "5173:5173"
+    depends_on:
+      api:
+        condition: service_healthy
+
+volumes:
+  postgres_dev_data:
