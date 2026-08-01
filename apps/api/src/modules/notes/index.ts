@@ -1,3 +1,7 @@
 import type { FastifyInstance } from 'fastify';
 
-export async function registerNotesModule(_app: FastifyInstance): Promise<void> {}
+import {registerNotesRoutes} from './route.js';
+
+export async function registerNotesModule(app: FastifyInstance): Promise<void> {
+  await registerNotesRoutes(app);
+}

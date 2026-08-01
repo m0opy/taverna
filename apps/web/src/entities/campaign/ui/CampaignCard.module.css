@@ -1,0 +1,47 @@
+.card {
+  min-height: 230px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 28px;
+  overflow: hidden;
+  border-radius: var(--radius-surface);
+  color: #fff6e8;
+  text-decoration: none;
+  box-shadow: 0 14px 35px rgba(55, 39, 22, .13);
+  transition: transform .18s ease, box-shadow .18s ease;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 18px 42px rgba(55, 39, 22, .2);
+}
+
+.card h2 {
+  margin: 10px 0;
+  font-size: 2rem;
+}
+
+.card p {
+  margin: 0;
+  color: #eee2d2;
+}
+
+.eyebrow {
+  color: #f1c77f;
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+}
+
+.card:focus-visible {
+  outline: 3px solid #bd7924;
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card {
+    transition: none;
+  }
+}

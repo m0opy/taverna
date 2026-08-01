@@ -11,7 +11,7 @@
 | Auth/session | реализовано | регистрация, логин, logout, `me`, cookie session |
 | Campaigns | реализовано частично | создание, просмотр, memberships, invites и join flow доступны |
 | Character update | реализовано | участник может изменить имя персонажа через campaign membership flow |
-| Notes | следующий срез | целевой контракт есть, CRUD ещё нужно закрыть |
+| Notes | MVP срез закрыт локально | контракт, API CRUD, права, frontend Notes page и локальный owner/player smoke проверены; production не проверен |
 | NPC | следующий срез | целевой контракт есть, CRUD и relations ещё нужно закрыть |
 | Guest/demo seed | запланировано | не считать готовым до ручного smoke в чистом браузере |
 | Production | не проверено | VPS, домен, HTTPS и автоматический deploy не считать настроенными |

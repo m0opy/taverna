@@ -1,10 +1,11 @@
 import {createBrowserRouter} from 'react-router-dom';
 
 import {AuthPage} from '../pages/auth/ui/AuthPage';
-import {CampaignPage} from '../pages/CampaignPage';
-import {CampaignsPage} from '../pages/CampaignsPage';
-import {CreateCampaignPage} from '../pages/CreateCampaignPage';
-import {JoinPage} from '../pages/JoinPage';
+import {CampaignPage} from '../pages/campaign/ui/CampaignPage';
+import {CreateCampaignPage} from '../pages/campaign/ui/CreateCampaignPage';
+import {DashboardPage} from '../pages/dashboard/ui/DashboardPage';
+import {JoinPage} from '../pages/join/ui/JoinPage';
+import {CampaignNotesPage} from '../pages/campaign-notes/ui/CampaignNotesPage';
 import {NotFoundPage} from '../pages/NotFoundPage';
 import {LandingPage} from '../pages/landing/ui/LandingPage';
 import {GuestOnlyRoute, ProtectedRoute} from './AuthBoundary';
@@ -26,10 +27,10 @@ export const router = createBrowserRouter([
       {
         element: <AppLayout />,
         children: [
-          {path: '/campaigns', element: <CampaignsPage />},
+          {path: '/campaigns', element: <DashboardPage />},
           {path: '/campaigns/new', element: <CreateCampaignPage />},
           {path: '/c/:id', element: <CampaignPage section="home" />},
-          {path: '/c/:id/notes', element: <CampaignPage section="notes" />},
+          {path: '/c/:id/notes', element: <CampaignNotesPage />},
           {path: '/c/:id/npc', element: <CampaignPage section="npc" />},
           {path: '/c/:id/settings', element: <CampaignPage section="settings" />},
         ],

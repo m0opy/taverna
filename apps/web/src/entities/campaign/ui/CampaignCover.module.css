@@ -1,0 +1,23 @@
+.forest {
+  background: linear-gradient(135deg, #344a37, #17211a);
+}
+
+.sea {
+  background: linear-gradient(135deg, #275063, #16252e);
+}
+
+.mountains {
+  background: linear-gradient(135deg, #5b514a, #25211f);
+}
+
+.city {
+  background: linear-gradient(135deg, #5a4134, #251a16);
+}
+
+.dungeon {
+  background: linear-gradient(135deg, #393746, #17161c);
+}
+
+.tavern {
+  background: linear-gradient(145deg, #6d4931, #2c2119);
+}

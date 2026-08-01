@@ -1,10 +1,14 @@
-import {type CampaignDetailDto, type CoverKey} from '@taverna/contracts';
+import {type CampaignDetailDto, type CoverKey, type CreateCampaignRequest} from '@taverna/contracts';
 import {useMutation, useQueryClient} from '@tanstack/react-query';
 import {useState} from 'react';
 import type {FormEvent} from 'react';
 import {useNavigate} from 'react-router-dom';
 
 import {ApiError, apiRequest} from '../../../../shared/api/client';
+
+export function buildCreateCampaignPayload(title: string, synopsis: string, coverKey: CoverKey): CreateCampaignRequest {
+  return {title, synopsis, coverKey};
+}
 
 export function useCreateCampaign() {
   const navigate = useNavigate();
@@ -13,7 +17,7 @@ export function useCreateCampaign() {
   const [synopsis, setSynopsis] = useState('');
   const [coverKey, setCoverKey] = useState<CoverKey>('tavern');
   const mutation = useMutation({
-    mutationFn: () => apiRequest<CampaignDetailDto>('/campaigns', {method: 'POST', body: JSON.stringify({title, synopsis, coverKey})}),
+    mutationFn: () => apiRequest<CampaignDetailDto>('/campaigns', {method: 'POST', body: JSON.stringify(buildCreateCampaignPayload(title, synopsis, coverKey))}),
     onSuccess: (campaign) => {
       void queryClient.invalidateQueries({queryKey: ['campaigns']});
       queryClient.setQueryData(['campaign', campaign.id], campaign);

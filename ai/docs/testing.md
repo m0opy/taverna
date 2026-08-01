@@ -2,7 +2,7 @@
 
 Документ задаёт минимально достаточную проверку для 4-дневного релиза. Цель не в полном покрытии, а в том, чтобы не сломать auth, доступы и ключевые сценарии из [requirements.md](/Users/polinashchetkina/project/taverna/ai/docs/requirements.md:129).
 
-> Статус: доступны `pnpm check`, Docker smoke `GET /api/health`, unit-тесты contracts/web и API integration suite для auth/campaign/invite flow. Integration tests требуют локальную PostgreSQL и `TEST_DATABASE_URL`; Notes, NPC, guest/demo и Playwright E2E пока остаются gaps следующих срезов.
+> Статус: доступны `pnpm check`, Docker smoke `GET /api/health`, contracts/web tests и API integration suite для auth/campaign/invite/Notes flow. Notes integration и локальный owner/player smoke пройдены с PostgreSQL; NPC, guest/demo, Playwright E2E и production smoke остаются gaps следующих срезов.
 
 ## 1. Что считаем обязательным
 

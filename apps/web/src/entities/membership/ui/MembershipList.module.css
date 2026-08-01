@@ -1,0 +1,61 @@
+.list {
+  display: grid;
+}
+
+.row {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  padding: 17px 2px;
+  border-bottom: 1px solid #d2c7b8;
+  border-radius: var(--radius-sm);
+}
+
+.row:hover {
+  background: rgba(255, 255, 255, .34);
+}
+
+.avatar {
+  width: 44px;
+  height: 44px;
+  flex: 0 0 44px;
+  display: grid;
+  place-items: center;
+  border: 1px solid #c8b18f;
+  border-radius: 50%;
+  color: #714614;
+  background: #dfcfb8;
+  font-family: Georgia, serif;
+  font-size: 1.1rem;
+}
+
+.copy {
+  min-width: 0;
+  flex: 1;
+}
+
+.nameLine {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.nameLine strong {
+  font-size: 1.02rem;
+}
+
+.ownerBadge {
+  padding: 3px 7px;
+  border-radius: var(--radius-pill);
+  color: #714614;
+  background: #f1c77f;
+  font-size: .68rem;
+  font-weight: 700;
+  letter-spacing: .03em;
+  text-transform: uppercase;
+}
+
+.row p {
+  margin: 4px 0 0;
+  color: #655c52;
+}

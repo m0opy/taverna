@@ -1,0 +1,111 @@
+.form {
+  display: grid;
+  gap: 28px;
+  margin-top: 38px;
+  padding-top: 34px;
+  border-top: 1px solid #c8bcac;
+}
+
+.coverField {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.coverField legend {
+  margin-bottom: 13px;
+  color: #2b251f;
+  font-weight: 650;
+}
+
+.coverGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.coverOption {
+  position: relative;
+  min-height: 100px;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 8px;
+  border: 2px solid transparent;
+  border-radius: var(--radius-control);
+  color: #fff8ee;
+  cursor: pointer;
+  transition: transform .16s ease, border-color .16s ease, box-shadow .16s ease;
+}
+
+.forest { background: linear-gradient(135deg, #405c43, #1b2b20); }
+.dungeon { background: linear-gradient(135deg, #464353, #201f28); }
+.tavern { background: linear-gradient(135deg, #6d4931, #2c2119); }
+.sea { background: linear-gradient(135deg, #2f6075, #192f39); }
+.mountains { background: linear-gradient(135deg, #6c625a, #302c29); }
+.city { background: linear-gradient(135deg, #765344, #30211c); }
+
+.coverOption:hover {
+  transform: translateY(-2px);
+}
+
+.coverOption:focus-visible {
+  outline: 3px solid #bd7924;
+  outline-offset: 3px;
+}
+
+.selected {
+  border-color: #efbf71;
+  box-shadow: 0 0 0 3px rgba(122, 74, 18, .28);
+}
+
+.selected::after {
+  content: "Выбрано";
+  position: absolute;
+  top: 7px;
+  right: 8px;
+  padding: 3px 6px;
+  border-radius: var(--radius-pill);
+  color: #2f2115;
+  background: #f1c77f;
+  font-size: .66rem;
+  font-weight: 700;
+  letter-spacing: .04em;
+}
+
+.formError {
+  margin: 0;
+  padding: 11px 13px;
+  border-left: 3px solid #c8573d;
+  border-radius: var(--radius-sm);
+  color: #8e2d22;
+  background: #f7e5df;
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding-top: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .coverOption {
+    transition: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .coverGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .actions :global(.g-button) {
+    width: 100%;
+  }
+}

@@ -19,7 +19,7 @@
 
 ### Статус реализации
 
-Локальный foundation закрыт: `postgres → migrate → api → web` поднимается через Compose, а `GET /api/health` подтверждает доступность БД. Auth, campaigns, invites, memberships и character update уже реализованы и покрыты текущими проверками. Notes, NPC, guest/demo и часть campaign controls остаются следующим срезом. VPS, домен, Caddy в публичном доступе и production CI/CD пока не проверены.
+Локальный foundation закрыт: `postgres → migrate → api → web` поднимается через Compose, а `GET /api/health` подтверждает доступность БД. Auth, campaigns, invites, memberships, character update и Notes CRUD реализованы и покрыты текущими проверками. NPC, guest/demo и часть campaign controls остаются следующими срезами. VPS, домен, Caddy в публичном доступе и production CI/CD пока не проверены.
 
 ## 2. Почему именно этот стек
 

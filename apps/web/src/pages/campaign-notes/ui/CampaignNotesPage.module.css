@@ -1,0 +1,91 @@
+.page {
+  width: min(980px, calc(100% - 40px));
+  margin: 0 auto;
+  padding: clamp(48px, 7vw, 88px) 0;
+}
+
+.heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 30px;
+}
+
+.heading h1 {
+  margin-bottom: 0;
+  font-size: clamp(2.6rem, 6vw, 4.8rem);
+}
+
+.eyebrow {
+  margin: 0 0 8px;
+  color: #76501f;
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+}
+
+.statusMessage {
+  padding: 80px 0;
+  color: #665d53;
+  font-size: 1.05rem;
+  text-align: center;
+}
+
+.actionError {
+  margin: 0 0 24px;
+  padding: 11px 13px;
+  border-left: 3px solid #c8573d;
+  border-radius: var(--radius-sm);
+  color: #8e2d22;
+  background: #f7e5df;
+}
+
+.errorState {
+  min-height: 300px;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  padding: clamp(32px, 5vw, 52px);
+  border: 1px solid #c9bdad;
+  border-radius: var(--radius-surface);
+  background: #eee6da;
+  text-align: center;
+}
+
+.errorState h2 {
+  margin-bottom: 10px;
+}
+
+.errorState > p:not(.eyebrow) {
+  max-width: 560px;
+  margin-bottom: 18px;
+  color: #655c52;
+}
+
+.retryButton {
+  padding: 10px 16px;
+  border: 1px solid #9d6a2a;
+  border-radius: var(--radius-control);
+  color: #fff8ee;
+  background: #8a5718;
+  cursor: pointer;
+}
+
+.retryButton:focus-visible {
+  outline: 3px solid #bd7924;
+  outline-offset: 3px;
+}
+
+@media (max-width: 640px) {
+  .heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .heading :global(.g-button) {
+    width: 100%;
+  }
+}

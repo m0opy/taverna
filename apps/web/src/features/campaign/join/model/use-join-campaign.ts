@@ -1,10 +1,11 @@
-import type {InvitePreviewDto, JoinCampaignResponse} from '@taverna/contracts';
-import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
+import type {JoinCampaignResponse} from '@taverna/contracts';
+import {useMutation, useQueryClient} from '@tanstack/react-query';
 import {useState} from 'react';
 import type {FormEvent} from 'react';
 import {useNavigate} from 'react-router-dom';
 
 import {useCurrentUser} from '../../../../entities/session/api/me-query';
+import {useInvitePreview} from '../../invite/model/use-invite-preview';
 import {ApiError, apiRequest} from '../../../../shared/api/client';
 import {resolveJoinErrorRedirect} from './resolve-join-error';
 
@@ -12,11 +13,7 @@ export function useJoinCampaign(token: string) {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const me = useCurrentUser();
-  const preview = useQuery({
-    queryKey: ['invite', token],
-    queryFn: () => apiRequest<InvitePreviewDto>(`/invites/${token}`),
-    retry: false,
-  });
+  const preview = useInvitePreview(token);
   const [characterName, setCharacterName] = useState('');
   const [characterClass, setCharacterClass] = useState('');
   const [characterInfo, setCharacterInfo] = useState('');
@@ -49,7 +46,7 @@ export function useJoinCampaign(token: string) {
     joinError: join.error instanceof ApiError ? join.error : null,
     me,
     preview,
-    previewError: preview.error instanceof ApiError ? preview.error : null,
+    previewError: preview.error,
     setCharacterClass,
     setCharacterInfo,
     setCharacterName,
