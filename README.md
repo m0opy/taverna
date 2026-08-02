@@ -35,6 +35,55 @@ Web: `http://localhost:5173`. API health: `http://localhost:3000/api/health`.
 pnpm check
 ```
 
+## Публичная версия и релизы
+
+Сайт доступен по адресу [http://92.118.114.232/campaigns](http://92.118.114.232/campaigns).
+
+`main` — релизная ветка. Для каждого изменения:
+
+1. Создайте feature-ветку от актуального `main`.
+2. Внесите изменения и выполните `pnpm check`.
+3. Откройте Pull Request в `main`; обязательная проверка `quality` должна пройти.
+4. После merge в `main` изменения становятся новой версией сайта.
+
+Не вносите изменения напрямую в `main`: он должен содержать только проверенные
+релизные коммиты.
+
+## Архитектура и CI/CD
+
+Проект — monorepo на `pnpm` с разделением на три приложения:
+
+- `apps/web` — React + Vite SPA; Nginx раздаёт статику и проксирует `/api/*`;
+- `apps/api` — Fastify API с Prisma;
+- `packages/contracts` — общие Zod-контракты между frontend и API.
+
+В production API, web и PostgreSQL запускаются отдельными Docker-контейнерами
+через Compose. База данных не публикуется наружу, а браузер работает с API по
+same-origin маршруту `/api/*`.
+
+CI/CD разделён на последовательные этапы:
+
+1. Pull Request в `main` запускает `quality`: генерацию Prisma Client,
+   миграции тестовой PostgreSQL, lint, typecheck, все тесты и production build.
+2. После merge в `main` проверки запускаются повторно; затем
+   `container-smoke` собирает production Docker-образы, проверяет Compose и
+   Nginx, поднимает dev-стек и запрашивает health endpoint API.
+3. Только после успешных проверок запускается deploy на VPS. Он получает SHA
+   коммита, сверяет его с текущей вершиной `origin/main`, собирает образы с
+   immutable тегом SHA, применяет миграции и ожидает health endpoint через
+   reverse proxy.
+
+Канал деплоя ограничен отдельным SSH-пользователем и forced command: GitHub
+Actions может вызвать только `deploy <SHA>`, а не произвольную команду на
+сервере. Production deploy сериализованы и не отменяют уже начатый релиз;
+устаревшие проверки отменяются только для одного Pull Request. Production-
+секреты остаются на VPS; SSH-ключ хранится в GitHub Environment Secret. Они не
+попадают в Git, Docker-образы или логи CI.
+
+Для полного соблюдения процесса в GitHub для `main` следует включить защиту
+ветки: `quality` должна быть обязательной проверкой, а прямые и force push —
+запрещены для обычной разработки.
+
 ## Docker Compose
 
 После установки Docker Desktop:
@@ -44,56 +93,3 @@ docker compose -f infra/compose.dev.yml up --build
 ```
 
 Покупка VPS и домена для локальной разработки не требуется.
-
-## Production / VPS
-
-Production-запуск рассчитан на VPS с Docker Engine и Compose plugin, доменом,
-направленным на сервер, и открытыми портами `80` и `443`. Caddy получает и
-обновляет HTTPS-сертификат автоматически.
-
-Создайте `.env` на сервере:
-
-```bash
-cp .env.example .env
-```
-
-Укажите в нём реальные значения:
-
-```env
-DOMAIN=example.com
-API_IMAGE=ghcr.io/your-org/taverna-api:release-sha
-WEB_IMAGE=ghcr.io/your-org/taverna-web:release-sha
-POSTGRES_PASSWORD=replace-with-a-strong-password
-JWT_SECRET=replace-with-a-long-random-secret
-APP_VERSION=release-sha
-ENABLE_DEMO_SEED=true
-DEMO_PASSWORD=replace-with-a-demo-password
-```
-
-`API_IMAGE` и `WEB_IMAGE` должны указывать на доступные Docker-образы. Сейчас
-репозиторий не публикует образы в GHCR и не выполняет SSH-деплой автоматически:
-образы нужно заранее собрать и загрузить в registry либо собрать непосредственно
-на VPS.
-
-Проверьте итоговую конфигурацию и запустите стек:
-
-```bash
-docker compose --env-file .env -f infra/compose.prod.yml config
-docker compose --env-file .env -f infra/compose.prod.yml up -d
-docker compose --env-file .env -f infra/compose.prod.yml ps
-docker compose --env-file .env -f infra/compose.prod.yml logs migrate
-```
-
-Migration-контейнер сначала применяет миграции, затем запускает идемпотентный
-demo seed. После успешного завершения API и web запускаются автоматически.
-
-Минимальная проверка после запуска:
-
-```bash
-curl --fail https://example.com/api/health
-curl --fail -i -X POST https://example.com/api/auth/guest
-```
-
-Не используйте `docker compose down --volumes` на production: эта команда
-удалит volume PostgreSQL и данные кампаний. Резервное копирование PostgreSQL
-этим Compose-файлом автоматически не настраивается.
