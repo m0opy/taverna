@@ -11,6 +11,19 @@ vi.mock('@gravity-ui/uikit', async () => {
   };
 });
 
+vi.mock('../../src/entities/game/api/use-games', () => ({
+  useGames: () => ({data: {items: []}, isError: false, isPending: false, refetch: vi.fn()}),
+}));
+
+vi.mock('@daypicker/react', async () => {
+  const {createElement} = await import('react');
+  return {
+    DayPicker: ({footer}: {footer: string}) => createElement('div', null, footer),
+  };
+});
+
+vi.mock('@daypicker/react/locale/ru', () => ({ru: {labels: {labelDayButton: () => 'Дата'}}}));
+
 import {CampaignDetailErrorState, CampaignDetailLoadingState, CampaignDetailView} from '../../src/widgets/campaign-detail/ui/CampaignDetail';
 
 const campaign = {
@@ -63,6 +76,7 @@ describe('campaign detail', () => {
     expect(markup).toContain('Бард · Алексей');
     expect(markup).toContain('Вы вступили в кампанию.');
     expect(markup).toContain('aria-current="page"');
+    expect(markup).toContain('Расписание кампании');
     expect(markup).not.toContain('Раскрыть предысторию');
     expect(markup).not.toContain('Показать предысторию');
   });

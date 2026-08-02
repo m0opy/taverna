@@ -19,13 +19,14 @@ describe('campaign next-session controls', () => {
     expect(markup).toContain('Среда');
   });
 
-  it('keeps date controls read-only for a player and supports clearing for an owner editor', () => {
+  it('keeps date controls read-only for a player and connects the owner editor to the calendar', () => {
     const player = render(<CampaignOverview campaignId="campaign-1" coverKey="tavern" isOwner={false} nextSessionAt={null} synopsis="" />);
     const ownerEditor = render(<NextSessionEditor campaignId="campaign-1" nextSessionAt="2026-08-12" />);
 
     expect(player).toContain('Дата не назначена');
     expect(player).not.toContain('Назначить');
-    expect(ownerEditor).toContain('Очистить дату');
+    expect(ownerEditor).toContain('изменение перенесёт её в календаре');
+    expect(ownerEditor).not.toContain('Очистить дату');
     expect(ownerEditor).toContain('type="date"');
   });
 

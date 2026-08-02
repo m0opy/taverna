@@ -3,6 +3,8 @@ import { describe, expect, it } from 'vitest';
 import {
   errorResponseSchema,
   campaignSummaryDtoSchema,
+  createGameRequestSchema,
+  gameListQuerySchema,
   joinCampaignRequestSchema,
   loginRequestSchema,
   npcWriteRequestSchema,
@@ -70,6 +72,22 @@ describe('contracts', () => {
 
   it('requires non-empty partial campaign updates', () => {
     expect(() => updateCampaignRequestSchema.parse({})).toThrow();
+  });
+
+  it('validates scheduled games with a timezone-neutral date and optional time', () => {
+    expect(createGameRequestSchema.parse({
+      scheduledFor: '2026-12-31',
+      scheduledTime: '19:30',
+      title: 'Праздник в трактире',
+      description: '  Зимний ваншот  ',
+    })).toEqual({
+      scheduledFor: '2026-12-31',
+      scheduledTime: '19:30',
+      title: 'Праздник в трактире',
+      description: 'Зимний ваншот',
+    });
+    expect(() => createGameRequestSchema.parse({scheduledFor: '2026-12-31', scheduledTime: '24:00', title: 'Не пройдёт'})).toThrow();
+    expect(() => gameListQuerySchema.parse({month: '2026-123'})).toThrow();
   });
 
   it('limits campaigns to ten active participants in the shared contract', () => {

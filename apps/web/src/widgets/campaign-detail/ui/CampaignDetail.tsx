@@ -9,6 +9,7 @@ import {ApiError} from '../../../shared/api/client';
 import {useDocumentTitle} from '../../../shared/lib/use-document-title';
 import {Badge} from '../../../shared/ui/badge';
 import {CampaignInvitePanel} from './CampaignInvitePanel';
+import {CampaignGamesCalendar} from '../../campaign-games-calendar/ui/CampaignGamesCalendar';
 import {CampaignMembers} from './CampaignMembers';
 import {CampaignOverview} from './CampaignOverview';
 import {CampaignTabs} from './CampaignTabs';
@@ -99,6 +100,7 @@ export function CampaignDetailView({campaign, id, notice, section}: {campaign: C
             <CampaignMembers members={campaign.members} membersCount={campaign.membersCount} />
             <CampaignInvitePanel campaignId={id} inviteUrl={campaign.inviteUrl} myMembershipId={campaign.myMembershipId} />
           </div>
+          <CampaignGamesCalendar campaignId={id} isOwner={isOwner} />
         </>
       )}
     </main>

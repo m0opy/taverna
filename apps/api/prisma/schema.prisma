@@ -40,9 +40,25 @@ model Campaign {
   memberships   Membership[]
   notes         Note[]
   npcs          Npc[]
+  games         Game[]
 
   @@index([ownerId], map: "campaigns_owner_idx")
   @@map("campaigns")
+}
+
+model Game {
+  id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  campaignId    String   @map("campaign_id") @db.Uuid
+  scheduledFor  DateTime @map("scheduled_for") @db.Date
+  scheduledTime String?  @map("scheduled_time") @db.Char(5)
+  title         String   @db.VarChar(80)
+  description   String   @default("") @db.VarChar(500)
+  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt     DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+  campaign      Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@index([campaignId, scheduledFor, scheduledTime], map: "games_campaign_scheduled_idx")
+  @@map("games")
 }
 
 model Membership {

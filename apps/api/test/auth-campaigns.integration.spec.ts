@@ -164,8 +164,8 @@ suite('Task 002 auth and campaign integration', () => {
     const todayDate = await app.inject({method: 'PATCH', url: `/api/campaigns/${campaign.id}`, headers: {cookie: owner.cookie}, payload: {nextSessionAt: '2026-08-02'}});
     expect(todayDate.statusCode).toBe(200);
     expect(todayDate.json().nextSessionAt).toBe('2026-08-02');
-    const cleared = await app.inject({method: 'PATCH', url: `/api/campaigns/${campaign.id}`, headers: {cookie: owner.cookie}, payload: {nextSessionAt: null}});
-    expect(cleared.json().nextSessionAt).toBeNull();
+    const scheduledGame = await app.inject({method: 'GET', url: `/api/campaigns/${campaign.id}/games?month=2026-08`, headers: {cookie: owner.cookie}});
+    expect(scheduledGame.json().items).toMatchObject([{scheduledFor: '2026-08-02', title: 'Игра'}]);
 
     const rotated = await app.inject({method: 'POST', url: `/api/campaigns/${campaign.id}/invite/rotate`, headers: {cookie: owner.cookie}});
     expect(rotated.statusCode).toBe(200);
