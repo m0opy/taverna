@@ -1,5 +1,7 @@
 import {useState} from 'react';
 
+import {copyText} from './copy-text';
+
 type CopyState = 'idle' | 'copied' | 'error';
 
 export function useCopyInvite(inviteUrl: string | null) {
@@ -7,11 +9,10 @@ export function useCopyInvite(inviteUrl: string | null) {
 
   const copyInvite = async () => {
     if (!inviteUrl) return;
-    try {
-      await navigator.clipboard.writeText(inviteUrl);
+    if (await copyText(inviteUrl)) {
       setCopyState('copied');
       window.setTimeout(() => setCopyState('idle'), 1800);
-    } catch {
+    } else {
       setCopyState('error');
     }
   };
