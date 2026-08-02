@@ -4,6 +4,7 @@ export * from './common/enums.js';
 export * from './common/error.js';
 export * from './common/health.js';
 export * from './common/validators.js';
+export * from './games/index.js';
 export * from './invites/index.js';
 export * from './memberships/index.js';
 export * from './notes/index.js';

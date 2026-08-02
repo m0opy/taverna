@@ -60,12 +60,12 @@ export function NextSessionEditor({campaignId, nextSessionAt, onClose}: NextSess
   }, [onClose, update.isPending]);
 
   const save = () => {
-    if (localError) return;
-    const payload = {nextSessionAt: value || null};
+    if (!value || localError) return;
+    const payload = {nextSessionAt: value};
     if (onClose) {
-      update.mutate(payload, {onSuccess: () => { setSuccessMessage('Дата следующей игры сохранена.'); onClose(); }});
+      update.mutate(payload, {onSuccess: () => { setSuccessMessage('Расписание обновлено.'); onClose(); }});
     } else {
-      update.mutate(payload, {onSuccess: () => setSuccessMessage('Дата следующей игры сохранена.')});
+      update.mutate(payload, {onSuccess: () => setSuccessMessage('Расписание обновлено.')});
     }
   };
 
@@ -80,19 +80,13 @@ export function NextSessionEditor({campaignId, nextSessionAt, onClose}: NextSess
       </div>
       <label className={styles.field}>
         <span>Дата игры</span>
-        <input autoFocus={Boolean(onClose)} disabled={update.isPending} min={minDate} ref={inputRef} type="date" value={value} onChange={(event) => { setSuccessMessage(null); setValue(event.target.value); }} />
+        <input autoFocus={Boolean(onClose)} disabled={update.isPending} min={minDate} ref={inputRef} required type="date" value={value} onChange={(event) => { setSuccessMessage(null); setValue(event.target.value); }} />
       </label>
+      <p className={styles.hint}>Дата связана с ближайшей игрой в расписании: изменение перенесёт её в календаре.</p>
       {successMessage && !onClose && <p className={styles.success} role="status">{successMessage}</p>}
       {(localError || error) && <p className={styles.error} role="alert">{localError ?? error?.fields?.nextSessionAt ?? error?.message}</p>}
       <footer className={styles.actions}>
-        <button className={styles.save} disabled={update.isPending} type="button" onClick={save}>{update.isPending ? 'Сохраняем…' : 'Сохранить'}</button>
-        {nextSessionAt && <button className={styles.clear} disabled={update.isPending} type="button" onClick={() => {
-          if (onClose) {
-            update.mutate({nextSessionAt: null}, {onSuccess: () => { setSuccessMessage('Дата следующей игры очищена.'); onClose(); }});
-          } else {
-            update.mutate({nextSessionAt: null}, {onSuccess: () => setSuccessMessage('Дата следующей игры очищена.')});
-          }
-        }}>Очистить дату</button>}
+        <button className={styles.save} disabled={update.isPending || !value} type="button" onClick={save}>{update.isPending ? 'Сохраняем…' : 'Сохранить'}</button>
       </footer>
     </section>
   );

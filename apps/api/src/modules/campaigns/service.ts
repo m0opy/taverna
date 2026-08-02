@@ -3,20 +3,17 @@ import type {FastifyInstance} from 'fastify';
 import {Prisma} from '@prisma/client';
 import type {CampaignDetailDto, CampaignSummaryDto, CreateCampaignRequest, DeleteCampaignRequest, UpdateCampaignRequest} from '@taverna/contracts';
 import {AppError} from '../../lib/errors.js';
+import {calendarDateToUtcDate, currentCalendarDate, serializeCalendarDate} from '../../lib/calendar-date.js';
+import {moveOrCreateNextSessionGame, recomputeCampaignNextSession} from '../games/next-session.js';
 
 const include = {memberships: {where: {leftAt: null}, include: {user: true}, orderBy: {joinedAt: 'asc'}}} satisfies Prisma.CampaignInclude;
 type Campaign = Prisma.CampaignGetPayload<{include: typeof include}>;
 const db = (app: FastifyInstance) => { if (!app.prisma) throw new AppError(500, 'INTERNAL_ERROR', 'Database is unavailable'); return app.prisma; };
-const calendar = (date: Date | null) => date?.toISOString().slice(0, 10) ?? null;
-const today = () => {
- const date = new Date();
- return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
-};
+const calendar = serializeCalendarDate;
 const dateValue = (value: string) => {
- const date = new Date(`${value}T00:00:00.000Z`);
- if (Number.isNaN(date.getTime()) || date.toISOString().slice(0, 10) !== value) throw new AppError(400, 'VALIDATION_ERROR', 'Validation failed', {fields: {nextSessionAt: 'Expected YYYY-MM-DD'}});
- if (value < today()) throw new AppError(400, 'VALIDATION_ERROR', 'Validation failed', {fields: {nextSessionAt: 'Choose today or a future date'}});
- return date;
+ const date = calendarDateToUtcDate(value, 'nextSessionAt');
+ if (value < currentCalendarDate()) throw new AppError(400, 'VALIDATION_ERROR', 'Validation failed', {fields: {nextSessionAt: 'Choose today or a future date'}});
+ return date!;
 };
 function dto(app: FastifyInstance, campaign: Campaign, userId: string): CampaignDetailDto {
  const mine=campaign.memberships.find((m)=>m.userId===userId); if(!mine) throw new AppError(403,'CAMPAIGN_FORBIDDEN','Campaign access denied');
@@ -27,6 +24,6 @@ export async function listCampaigns(app: FastifyInstance,userId:string){const it
 export async function createCampaign(app:FastifyInstance,userId:string,p:CreateCampaignRequest){const campaign=await db(app).$transaction(async tx=>{if(await tx.campaign.count({where:{ownerId:userId}})>=20)throw new AppError(409,'CAMPAIGN_LIMIT_REACHED','Campaign limit reached');return tx.campaign.create({data:{...p,inviteToken:randomBytes(9).toString('base64url'),ownerId:userId,memberships:{create:{userId}}},include});},{isolationLevel:Prisma.TransactionIsolationLevel.Serializable});return dto(app,campaign,userId);}
 export async function getCampaign(app:FastifyInstance,id:string,userId:string){const c=await db(app).campaign.findUnique({where:{id},include});if(!c)throw new AppError(404,'NOT_FOUND','Campaign not found');return dto(app,c,userId);}
 async function owner(app:FastifyInstance,id:string,userId:string){const c=await db(app).campaign.findUnique({where:{id},include});if(!c)throw new AppError(404,'NOT_FOUND','Campaign not found');if(c.ownerId!==userId)throw new AppError(403,'CAMPAIGN_FORBIDDEN','Campaign owner access required');return c;}
-export async function updateCampaign(app:FastifyInstance,id:string,userId:string,p:UpdateCampaignRequest){await owner(app,id,userId);const data={...p,...(p.nextSessionAt!==undefined?{nextSessionAt:p.nextSessionAt===null?null:dateValue(p.nextSessionAt)}:{})};const c=await db(app).campaign.update({where:{id},data,include});return dto(app,c,userId);}
+export async function updateCampaign(app:FastifyInstance,id:string,userId:string,p:UpdateCampaignRequest){await owner(app,id,userId);const {nextSessionAt,...data}=p;const c=await db(app).$transaction(async tx=>{if(nextSessionAt===null){await recomputeCampaignNextSession(tx,id);}else if(nextSessionAt!==undefined){await moveOrCreateNextSessionGame(tx,id,dateValue(nextSessionAt));}return tx.campaign.update({where:{id},data,include});});return dto(app,c,userId);}
 export async function rotateInvite(app:FastifyInstance,id:string,userId:string){await owner(app,id,userId);const c=await db(app).campaign.update({where:{id},data:{inviteToken:randomBytes(9).toString('base64url')},include});return {inviteUrl:dto(app,c,userId).inviteUrl!};}
 export async function deleteCampaign(app:FastifyInstance,id:string,userId:string,p:DeleteCampaignRequest){const c=await owner(app,id,userId);if(c.title!==p.confirmationTitle)throw new AppError(400,'VALIDATION_ERROR','Confirmation title does not match', {fields:{confirmationTitle:'Enter the exact campaign title'}});await db(app).campaign.delete({where:{id}});}

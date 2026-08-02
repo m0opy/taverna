@@ -8,6 +8,7 @@ import { registerAuth } from './plugins/auth.js';
 import { registerErrorHandler } from './plugins/error-handler.js';
 import { registerAuthModule } from './modules/auth/index.js';
 import { registerCampaignsModule } from './modules/campaigns/index.js';
+import {registerGamesModule} from './modules/games/index.js';
 import { registerHealthModule } from './modules/health/routes.js';
 import { registerMembershipsModule } from './modules/memberships/index.js';
 import { registerNotesModule } from './modules/notes/index.js';
@@ -65,6 +66,7 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<FastifyIn
     });
     await registerAuthModule(scopedApp);
     await registerCampaignsModule(scopedApp);
+    await registerGamesModule(scopedApp);
     await registerMembershipsModule(scopedApp);
     await registerNotesModule(scopedApp);
     await registerNpcsModule(scopedApp);
