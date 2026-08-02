@@ -20,4 +20,21 @@ describe('ConfirmDialog', () => {
     expect(markup).toContain('Отмена');
     expect(markup).toContain('Удалить');
   });
+
+  it('supports a custom pending label for non-destructive confirmations', () => {
+    const markup = renderToStaticMarkup(
+      <ConfirmDialog
+        confirmLabel="Обновить ссылку"
+        description="Старая ссылка перестанет работать."
+        isPending
+        onCancel={vi.fn()}
+        onConfirm={vi.fn()}
+        pendingLabel="Обновляем…"
+        title="Обновить приглашение?"
+      />,
+    );
+
+    expect(markup).toContain('Обновить приглашение?');
+    expect(markup).toContain('Обновляем…');
+  });
 });

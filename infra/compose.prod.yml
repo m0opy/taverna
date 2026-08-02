@@ -18,14 +18,15 @@ services:
 
   migrate:
     image: ${API_IMAGE:?API_IMAGE is required}
-    command: ["pnpm", "db:deploy"]
+    command: ["sh", "-c", "pnpm db:deploy && pnpm db:seed"]
     environment: &api_environment
       NODE_ENV: production
       PORT: 3000
       LOG_LEVEL: ${LOG_LEVEL:-info}
       DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?schema=public
       JWT_SECRET: ${JWT_SECRET:?JWT_SECRET is required}
-      APP_ORIGIN: https://${DOMAIN:?DOMAIN is required}
+      APP_ORIGIN: ${APP_ORIGIN:?APP_ORIGIN is required}
+      ALLOW_INSECURE_SESSION_COOKIES: ${ALLOW_INSECURE_SESSION_COOKIES:-false}
       APP_VERSION: ${APP_VERSION:?APP_VERSION is required}
       ENABLE_DEMO_SEED: ${ENABLE_DEMO_SEED:-true}
       DEMO_EMAIL: ${DEMO_EMAIL:-demo@tavern.app}
@@ -52,15 +53,8 @@ services:
 
   web:
     image: ${WEB_IMAGE:?WEB_IMAGE is required}
-    environment:
-      DOMAIN: ${DOMAIN}
     ports:
       - "80:80"
-      - "443:443"
-      - "443:443/udp"
-    volumes:
-      - caddy_data:/data
-      - caddy_config:/config
     depends_on:
       api:
         condition: service_healthy
@@ -68,5 +62,3 @@ services:
 
 volumes:
   postgres_data:
-  caddy_data:
-  caddy_config:

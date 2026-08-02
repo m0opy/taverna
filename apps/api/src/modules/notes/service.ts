@@ -1,5 +1,11 @@
 import { Prisma, type PrismaClient } from '@prisma/client';
-import type { NoteDto, NoteWriteRequest } from '@taverna/contracts';
+import type {
+  NoteDto,
+  NoteListQuery,
+  NoteListResponse,
+  NoteListSort,
+  NoteWriteRequest,
+} from '@taverna/contracts';
 
 import { AppError } from '../../lib/errors.js';
 import {
@@ -13,17 +19,19 @@ import {
   findActiveMembership,
   findCampaign,
   findNote,
-  listNotes,
+  listNotesPage,
+  type NoteListOrder,
   type NoteWithAuthor,
   type NotesDb,
   updateNote,
 } from './repo.js';
 
 const noteLimit = 500;
+const defaultPageSize = 10;
+const maxSerializableWriteAttempts = 3;
+const defaultSort: NoteListSort = 'sessionDateDesc';
 
 type AccessContext = {
-  campaignId: string;
-  campaignOwnerId: string;
   membershipId: string;
 };
 
@@ -43,22 +51,19 @@ async function requireActiveMember(
   }
 
   return {
-    campaignId,
-    campaignOwnerId: campaign.ownerId,
     membershipId: membership.id,
   };
 }
 
-function canManageNote(note: NoteWithAuthor, campaignOwnerId: string, userId: string): boolean {
-  return campaignOwnerId === userId || note.author.userId === userId;
+function canManageNote(note: NoteWithAuthor, userId: string): boolean {
+  return note.author.userId === userId;
 }
 
 function noteDto(
   note: NoteWithAuthor,
-  campaignOwnerId: string,
   userId: string,
 ): NoteDto {
-  const canManage = canManageNote(note, campaignOwnerId, userId);
+  const canManage = canManageNote(note, userId);
   return {
     id: note.id,
     campaignId: note.campaignId,
@@ -81,12 +86,88 @@ export async function getNotes(
   db: NotesDb,
   campaignId: string,
   userId: string,
-): Promise<{items: NoteDto[]}> {
+  query: NoteListQuery = {},
+): Promise<NoteListResponse> {
   const context = await requireActiveMember(db, campaignId, userId);
-  const notes = await listNotes(db, campaignId);
+  const search = query.search?.trim() || undefined;
+  const sort = query.sort ?? defaultSort;
+  const pageSize = query.pageSize ?? defaultPageSize;
+  const totalItems = await countNotes(db, campaignId, search);
+  const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
+  const page = Math.min(query.page ?? 1, totalPages);
+  const notes = await listNotesPage(db, {
+    campaignId,
+    orderBy: noteListOrder(sort),
+    search,
+    skip: (page - 1) * pageSize,
+    take: pageSize,
+  });
+
   return {
-    items: notes.map((note) => noteDto(note, context.campaignOwnerId, userId)),
+    items: notes.map((note) => noteDto(note, userId)),
+    meta: {
+      page,
+      pageSize,
+      totalItems,
+      totalPages,
+      search: search ?? null,
+      sort,
+    },
   };
+}
+
+function noteListOrder(sort: NoteListSort): NoteListOrder {
+  switch (sort) {
+    case 'sessionDateAsc':
+      return [
+        {sessionDate: {sort: 'asc', nulls: 'last'}},
+        {createdAt: 'asc'},
+      ];
+    case 'updatedAtDesc':
+      return [
+        {updatedAt: 'desc'},
+        {createdAt: 'desc'},
+      ];
+    case 'updatedAtAsc':
+      return [
+        {updatedAt: 'asc'},
+        {createdAt: 'asc'},
+      ];
+    case 'sessionDateDesc':
+    default:
+      return [
+        {sessionDate: {sort: 'desc', nulls: 'last'}},
+        {createdAt: 'desc'},
+      ];
+  }
+}
+
+function isRetryableWriteConflict(error: unknown): error is Prisma.PrismaClientKnownRequestError {
+  return error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2034';
+}
+
+async function runSerializableNoteWrite<T>(
+  db: PrismaClient,
+  operation: (tx: Prisma.TransactionClient) => Promise<T>,
+): Promise<T> {
+  for (let attempt = 1; attempt <= maxSerializableWriteAttempts; attempt += 1) {
+    try {
+      return await db.$transaction(
+        (tx) => operation(tx),
+        {isolationLevel: Prisma.TransactionIsolationLevel.Serializable},
+      );
+    } catch (error) {
+      if (!isRetryableWriteConflict(error)) {
+        throw error;
+      }
+
+      if (attempt === maxSerializableWriteAttempts) {
+        throw new AppError(409, 'CONFLICT', 'Заметка изменилась одновременно с другим действием. Повторите попытку.');
+      }
+    }
+  }
+
+  throw new AppError(500, 'INTERNAL_ERROR', 'Serializable note write failed unexpectedly');
 }
 
 export async function createCampaignNote(
@@ -97,7 +178,7 @@ export async function createCampaignNote(
 ): Promise<NoteDto> {
   const context = await requireActiveMember(db, campaignId, userId);
   const sessionDate = calendarDateToDate(payload.sessionDate);
-  const note = await db.$transaction(async (tx) => {
+  const note = await runSerializableNoteWrite(db, async (tx) => {
     const count = await countNotes(tx, campaignId);
     if (count >= noteLimit) {
       throw new AppError(409, 'NOTE_LIMIT_REACHED', 'Note limit reached');
@@ -109,9 +190,9 @@ export async function createCampaignNote(
       body: payload.body,
       sessionDate,
     });
-  }, {isolationLevel: Prisma.TransactionIsolationLevel.Serializable});
+  });
 
-  return noteDto(note, context.campaignOwnerId, userId);
+  return noteDto(note, userId);
 }
 
 async function requireEditableNote(
@@ -119,40 +200,42 @@ async function requireEditableNote(
   campaignId: string,
   noteId: string,
   userId: string,
-): Promise<{context: AccessContext; note: NoteWithAuthor}> {
-  const context = await requireActiveMember(db, campaignId, userId);
+): Promise<void> {
+  await requireActiveMember(db, campaignId, userId);
   const note = await findNote(db, campaignId, noteId);
   if (!note) {
     throw new AppError(404, 'NOT_FOUND', 'Note not found');
   }
-  if (!canManageNote(note, context.campaignOwnerId, userId)) {
+  if (!canManageNote(note, userId)) {
     throw new AppError(403, 'FORBIDDEN', 'Note access denied');
   }
-
-  return {context, note};
 }
 
 export async function updateCampaignNote(
-  db: NotesDb,
+  db: PrismaClient,
   campaignId: string,
   noteId: string,
   userId: string,
   payload: NoteWriteRequest,
 ): Promise<NoteDto> {
-  const {context} = await requireEditableNote(db, campaignId, noteId, userId);
-  const note = await updateNote(db, noteId, {
-    body: payload.body,
-    sessionDate: calendarDateToDate(payload.sessionDate),
+  return runSerializableNoteWrite(db, async (tx) => {
+    await requireEditableNote(tx, campaignId, noteId, userId);
+    const note = await updateNote(tx, noteId, {
+      body: payload.body,
+      sessionDate: calendarDateToDate(payload.sessionDate),
+    });
+    return noteDto(note, userId);
   });
-  return noteDto(note, context.campaignOwnerId, userId);
 }
 
 export async function deleteCampaignNote(
-  db: NotesDb,
+  db: PrismaClient,
   campaignId: string,
   noteId: string,
   userId: string,
 ): Promise<void> {
-  await requireEditableNote(db, campaignId, noteId, userId);
-  await deleteNote(db, noteId);
+  await runSerializableNoteWrite(db, async (tx) => {
+    await requireEditableNote(tx, campaignId, noteId, userId);
+    await deleteNote(tx, noteId);
+  });
 }

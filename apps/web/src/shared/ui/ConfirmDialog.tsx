@@ -7,6 +7,7 @@ interface ConfirmDialogProps {
   confirmLabel?: string;
   description: string;
   isPending?: boolean;
+  pendingLabel?: string;
   onCancel: () => void;
   onConfirm: () => void;
   title: string;
@@ -17,6 +18,7 @@ export function ConfirmDialog({
   confirmLabel = 'Удалить',
   description,
   isPending = false,
+  pendingLabel = 'Удаляем…',
   onCancel,
   onConfirm,
   title,
@@ -39,7 +41,7 @@ export function ConfirmDialog({
         <footer className={styles.actions}>
           <button autoFocus className={styles.cancel} disabled={isPending} type="button" onClick={onCancel}>{cancelLabel}</button>
           <button className={styles.confirm} disabled={isPending} type="button" onClick={onConfirm}>
-            {isPending ? 'Удаляем…' : confirmLabel}
+            {isPending ? pendingLabel : confirmLabel}
           </button>
         </footer>
       </section>

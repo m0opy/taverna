@@ -10,6 +10,24 @@ import {
   uuidSchema,
 } from '../common/validators.js';
 
+export function hasDuplicateNpcRelationTargets(
+  relations: ReadonlyArray<{toNpcId: string}> | null | undefined,
+) {
+  if (!relations) {
+    return false;
+  }
+
+  const seen = new Set<string>();
+  for (const relation of relations) {
+    if (seen.has(relation.toNpcId)) {
+      return true;
+    }
+    seen.add(relation.toNpcId);
+  }
+
+  return false;
+}
+
 export const npcRelationInputSchema = z.strictObject({
   toNpcId: uuidSchema,
   label: trimmedString(1, 60),
@@ -50,7 +68,13 @@ export const npcWriteRequestSchema = z.strictObject({
     .optional()
     .transform((value) => value ?? '')
     .pipe(z.string().max(1000)),
-  relations: z.array(npcRelationInputSchema).max(5).optional(),
+  relations: z
+    .array(npcRelationInputSchema)
+    .max(5)
+    .refine((relations) => !hasDuplicateNpcRelationTargets(relations), {
+      message: 'Нельзя добавить связь с одним NPC дважды.',
+    })
+    .optional(),
 });
 
 export const npcListQuerySchema = z.strictObject({

@@ -3,9 +3,10 @@
 .row {display: grid;grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;gap: 8px;align-items: center;}
 .control {min-width: 0;}
 .control select,.control input {width: 100%;min-width: 0;padding: 10px 11px;color: #33271f;background: #fff;border: 1px solid #cfc1b1;border-radius: 8px;}
+.fieldError {margin: 0;color: #9d3f32;font-size: .82rem;}
 .row > button {width: 30px;height: 30px;color: #865a36;font-size: 1.2rem;background: transparent;border: 0;cursor: pointer;}
 .row > button:focus-visible,.add:focus-visible {outline: 3px solid rgba(181, 123, 42, .35);outline-offset: 2px;}
-.add {justify-self: start;padding: 5px 0;color: #895b2f;background: transparent;border: 0;cursor: pointer;}
+.add {justify-self: start;padding: 5px 0;color: #6e471f;background: transparent;border: 0;cursor: pointer;}
 .add:disabled {color: #a99e91;cursor: not-allowed;}
 .visuallyHidden {position: absolute;width: 1px;height: 1px;padding: 0;margin: -1px;overflow: hidden;clip: rect(0, 0, 0, 0);white-space: nowrap;border: 0;}
 

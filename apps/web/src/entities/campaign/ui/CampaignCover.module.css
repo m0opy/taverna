@@ -1,23 +1,35 @@
 .forest {
-  background: linear-gradient(135deg, #344a37, #17211a);
+  --cover-image: url('/images/campaign-covers/forest-preset.png');
+  --cover-position: 64% center;
+  --cover-rgb: 23 33 26;
 }
 
 .sea {
-  background: linear-gradient(135deg, #275063, #16252e);
+  --cover-image: url('/images/campaign-covers/sea-preset.png');
+  --cover-position: 64% center;
+  --cover-rgb: 22 37 46;
 }
 
 .mountains {
-  background: linear-gradient(135deg, #5b514a, #25211f);
+  --cover-image: url('/images/campaign-covers/mountains-preset.png');
+  --cover-position: 62% center;
+  --cover-rgb: 37 33 31;
 }
 
 .city {
-  background: linear-gradient(135deg, #5a4134, #251a16);
+  --cover-image: url('/images/campaign-covers/city-preset.png');
+  --cover-position: 63% center;
+  --cover-rgb: 37 26 22;
 }
 
 .dungeon {
-  background: linear-gradient(135deg, #393746, #17161c);
+  --cover-image: url('/images/campaign-covers/dungeon-preset.png');
+  --cover-position: 64% center;
+  --cover-rgb: 23 22 28;
 }
 
 .tavern {
-  background: linear-gradient(145deg, #6d4931, #2c2119);
+  --cover-image: url('/images/campaign-covers/tavern-preset.png');
+  --cover-position: 64% center;
+  --cover-rgb: 44 33 25;
 }

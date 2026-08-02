@@ -1,0 +1,80 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+
+usage() {
+  printf 'Usage: %s --repo <https://github.com/owner/repo.git> --app-origin <http://ipv4> --actions-public-key <ssh-ed25519-key>\n' "$0" >&2
+  exit 64
+}
+
+repo_url=''
+app_origin=''
+actions_public_key=''
+while (($#)); do
+  case $1 in
+    --repo) repo_url=${2:-}; shift 2 ;;
+    --app-origin) app_origin=${2:-}; shift 2 ;;
+    --actions-public-key) actions_public_key=${2:-}; shift 2 ;;
+    *) usage ;;
+  esac
+done
+
+[[ -n $repo_url && -n $app_origin && -n $actions_public_key ]] || usage
+[[ $repo_url =~ ^https://github\.com/[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+\.git$ ]] || usage
+[[ $app_origin =~ ^http://[0-9]{1,3}(\.[0-9]{1,3}){3}$ ]] || usage
+[[ $actions_public_key =~ ^ssh-ed25519\ [A-Za-z0-9+/=]+([[:space:]].*)?$ ]] || usage
+
+readonly deploy_user=taverna-deploy
+readonly release_dir=/srv/taverna
+readonly environment_dir=/etc/taverna
+readonly environment_file=$environment_dir/production.env
+
+export DEBIAN_FRONTEND=noninteractive
+apt-get update
+apt-get install --yes docker.io docker-compose-v2 git curl
+systemctl enable --now docker
+
+if ! id "$deploy_user" >/dev/null 2>&1; then
+  useradd --create-home --shell /bin/bash --groups docker "$deploy_user"
+fi
+usermod --append --groups docker "$deploy_user"
+
+install --directory --owner="$deploy_user" --group="$deploy_user" --mode=0700 "/home/$deploy_user/.ssh"
+install --directory --owner="$deploy_user" --group="$deploy_user" --mode=0750 "$release_dir"
+install --directory --owner="$deploy_user" --group="$deploy_user" --mode=0750 "$environment_dir"
+
+if [[ ! -d "$release_dir/.git" ]]; then
+  runuser --user="$deploy_user" -- git -C "$release_dir" init --initial-branch=main
+  runuser --user="$deploy_user" -- git -C "$release_dir" remote add origin "$repo_url"
+fi
+
+printf 'command="/usr/local/sbin/taverna-deploy",no-agent-forwarding,no-port-forwarding,no-pty,no-user-rc,no-X11-forwarding %s\n' "$actions_public_key" > "/home/$deploy_user/.ssh/authorized_keys"
+chown "$deploy_user:$deploy_user" "/home/$deploy_user/.ssh/authorized_keys"
+chmod 0600 "/home/$deploy_user/.ssh/authorized_keys"
+
+if [[ ! -f "$environment_file" ]]; then
+  postgres_password=$(openssl rand -hex 32)
+  jwt_secret=$(openssl rand -hex 32)
+  demo_password=$(openssl rand -hex 32)
+  umask 077
+  cat > "$environment_file" <<EOF
+POSTGRES_DB=taverna
+POSTGRES_USER=taverna
+POSTGRES_PASSWORD=$postgres_password
+JWT_SECRET=$jwt_secret
+APP_ORIGIN=$app_origin
+ALLOW_INSECURE_SESSION_COOKIES=true
+LOG_LEVEL=info
+ENABLE_DEMO_SEED=false
+DEMO_EMAIL=demo@tavern.app
+DEMO_PASSWORD=$demo_password
+EOF
+  chown "$deploy_user:$deploy_user" "$environment_file"
+  chmod 0600 "$environment_file"
+fi
+
+install --owner=root --group=root --mode=0755 "$(dirname "$0")/taverna-deploy" /usr/local/sbin/taverna-deploy
+if command -v ufw >/dev/null 2>&1; then
+  ufw allow 80/tcp
+fi
+
+printf 'VPS bootstrap complete. The public repository is read over HTTPS; no GitHub deploy key is required.\n'

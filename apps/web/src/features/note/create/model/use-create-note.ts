@@ -1,7 +1,7 @@
 import type {NoteDto, NoteWriteRequest} from '@taverna/contracts';
 import {useMutation, useQueryClient} from '@tanstack/react-query';
 
-import {notesQueryKey} from '../../../../entities/note/api/use-notes';
+import {allNotesQueryKey} from '../../../../entities/note/api/use-notes';
 import {apiRequest} from '../../../../shared/api/client';
 
 export function useCreateNote(campaignId: string) {
@@ -13,7 +13,7 @@ export function useCreateNote(campaignId: string) {
       body: JSON.stringify(payload),
     }),
     onSuccess: () => {
-      void queryClient.invalidateQueries({queryKey: notesQueryKey(campaignId)});
+      void queryClient.invalidateQueries({queryKey: allNotesQueryKey(campaignId)});
     },
   });
 }

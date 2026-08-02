@@ -12,10 +12,26 @@
   margin-bottom: 30px;
 }
 
+.headingActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.filterToggle {
+  flex: 0 0 auto;
+}
+
 .heading h1 {
   margin-bottom: 0;
   font-size: clamp(2.65rem, 5vw, 4.6rem);
   line-height: .98;
+}
+
+.heading h1 span {
+  color: var(--color-ink-muted);
+  font-size: .55em;
+  font-weight: 500;
 }
 
 .eyebrow {
@@ -25,6 +41,65 @@
   font-weight: 700;
   letter-spacing: .18em;
   text-transform: uppercase;
+}
+
+.page > nav[aria-label='Разделы кампании'] {
+  margin-bottom: 18px;
+}
+
+.controls {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(200px, .55fr);
+  gap: 16px;
+  align-items: end;
+  margin: 0 0 30px;
+  padding: 0 0 22px;
+  border-bottom: 1px solid var(--color-line);
+  animation: reveal .16s ease-out;
+}
+
+.controlField {
+  display: grid;
+  gap: 8px;
+  color: #3f352b;
+  font-size: .82rem;
+  font-weight: 700;
+}
+
+.controlField input,
+.controlField select {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1px solid #b7aa9b;
+  border-radius: var(--radius-control);
+  color: #231e18;
+  background: #fffdf8;
+}
+
+.controlField input:focus-visible,
+.controlField select:focus-visible {
+  border-color: #b87925;
+  outline: 0;
+  box-shadow: 0 0 0 2px var(--color-focus);
+}
+
+.resultsMeta {
+  grid-column: 1 / -1;
+  margin: 0;
+  color: var(--color-ink-muted);
+}
+
+@keyframes reveal {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .statusMessage {
@@ -65,18 +140,10 @@
   color: var(--color-ink-muted);
 }
 
-.retryButton {
-  padding: 10px 16px;
-  border: 1px solid var(--color-accent-strong);
-  border-radius: var(--radius-control);
-  color: #fff8ee;
-  background: var(--color-accent-strong);
-  cursor: pointer;
-}
-
-.retryButton:focus-visible {
-  outline: 2px solid var(--color-accent);
-  outline-offset: 3px;
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 26px;
 }
 
 @media (max-width: 640px) {
@@ -86,7 +153,23 @@
     gap: 16px;
   }
 
-  .heading :global(.g-button) {
+  .headingActions {
     width: 100%;
+  }
+
+  .createButton {
+    flex: 1;
+  }
+
+  .controls {
+    grid-template-columns: 1fr;
+    padding: 16px 0 20px;
+  }
+
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .controls {
+    animation: none;
   }
 }

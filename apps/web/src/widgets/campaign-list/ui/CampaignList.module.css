@@ -11,6 +11,15 @@
   text-align: center;
 }
 
+.notice {
+  margin: 0 0 22px;
+  padding: 12px 14px;
+  border: 1px solid #bfd7c3;
+  border-radius: var(--radius-control);
+  color: #25643a;
+  background: #f2faf2;
+}
+
 .emptyState {
   min-height: 390px;
   display: grid;

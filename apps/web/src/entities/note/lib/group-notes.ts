@@ -12,8 +12,7 @@ export function formatSessionLabel(sessionDate: string | null): string {
     day: 'numeric',
     month: 'long',
     year: 'numeric',
-    timeZone: 'UTC',
-  }).format(new Date(Date.UTC(year, month - 1, day)));
+  }).format(new Date(year, month - 1, day));
   return `Сессия ${formatted}`;
 }
 

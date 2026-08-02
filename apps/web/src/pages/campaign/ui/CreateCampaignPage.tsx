@@ -1,7 +1,10 @@
 import {CreateCampaignForm} from '../../../features/campaign/create/ui/CreateCampaignForm';
+import {useDocumentTitle} from '../../../shared/lib/use-document-title';
 import styles from './CreateCampaignPage.module.css';
 
 export function CreateCampaignPage() {
+  useDocumentTitle('Создать кампанию');
+
   return (
     <main className={styles.page}>
       <p className={styles.eyebrow}>Новая история</p>

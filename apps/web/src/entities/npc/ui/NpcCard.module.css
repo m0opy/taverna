@@ -13,22 +13,26 @@
 .cardHeader {display: flex;align-items: flex-start;gap: 12px;min-width: 0;}
 .initials {display: grid;flex: 0 0 44px;place-items: center;width: 44px;height: 44px;color: #fff5e8;font-family: Georgia, serif;font-size: 1rem;background: #865b3c;border-radius: 50%;}
 .identity {min-width: 0;flex: 1;}
-.identity h2 {margin: 0;color: #261c15;font-size: 1.45rem;line-height: 1.05;overflow-wrap: anywhere;}
-.identity p {margin: 5px 0 0;color: #806d5d;overflow-wrap: anywhere;}
+.identity h2 {margin: 0;color: #261c15;font-size: 1.45rem;line-height: 1.05;overflow-wrap: break-word;word-break: normal;}
+.identity p {margin: 5px 0 0;color: #665345;overflow-wrap: break-word;word-break: normal;}
 .attitude {flex: 0 0 auto;padding: 5px 9px;border-radius: 999px;font-size: .72rem;font-weight: 700;white-space: nowrap;}
 .ally {color: #2e6b47;background: #e1f0e4;}
-.neutral {color: #85621c;background: #f7ecd1;}
+.neutral {color: #6e5012;background: #f7ecd1;}
 .enemy {color: #9d3f32;background: #f8dfd9;}
 .unknown {color: #655b52;background: #ebe6df;}
-.tags {display: flex;flex-wrap: wrap;gap: 6px;min-height: 25px;}
-.tag {padding: 4px 8px;color: #70522e;font-size: .78rem;background: #f1e8da;border-radius: 999px;}
-.notes {display: -webkit-box;min-height: 4.5em;margin: 0;color: #5d5147;line-height: 1.5;overflow: hidden;-webkit-box-orient: vertical;-webkit-line-clamp: 3;overflow-wrap: anywhere;}
-.relations {display: grid;gap: 7px;padding-top: 13px;border-top: 1px solid #eee5d9;color: #63574d;font-size: .85rem;}
-.relationsLabel {color: #a36e2d;font-size: .7rem;font-weight: 700;letter-spacing: .12em;text-transform: uppercase;}
-.relation {overflow-wrap: anywhere;}
-.noRelations {color: #9b8e81;font-style: italic;}
+.tags {display: flex;flex-wrap: wrap;gap: 6px;}
+.tag {padding: 4px 8px;color: #61411f;font-size: .78rem;background: #f1e8da;border-radius: 999px;overflow-wrap: anywhere;}
+.notesBlock {display: grid;gap: 8px;}
+.notes {margin: 0;color: #46392f;line-height: 1.55;white-space: pre-wrap;overflow-wrap: anywhere;}
+.notesCollapsed {display: -webkit-box;overflow: hidden;-webkit-box-orient: vertical;-webkit-line-clamp: 3;}
+.notesToggle {justify-self: start;padding: 0;color: #7b4f25;font-size: .82rem;font-weight: 700;background: transparent;border: 0;cursor: pointer;}
+.notesToggle:hover,.notesToggle:focus-visible {color: #4f321c;}
+.relations {display: grid;gap: 7px;padding-top: 13px;border-top: 1px solid #eee5d9;color: #54483f;font-size: .85rem;}
+.relationsLabel {color: #7b4e20;font-size: .7rem;font-weight: 700;letter-spacing: .12em;text-transform: uppercase;}
+.relation {overflow-wrap: break-word;word-break: normal;}
+.noRelations {color: #78695d;font-style: italic;}
 .footer {display: flex;align-items: center;justify-content: space-between;gap: 12px;margin-top: auto;padding-top: 4px;}
-.author {min-width: 0;color: #9b8e81;font-size: .75rem;overflow-wrap: anywhere;}
+.author {min-width: 0;color: #77685b;font-size: .75rem;overflow-wrap: break-word;word-break: normal;}
 .actions {display: flex;flex-wrap: wrap;gap: 8px;}
 .actions button {display: grid;width: 32px;height: 32px;place-items: center;padding: 0;color: #855a2e;background: transparent;border: 0;border-radius: 8px;cursor: pointer;}
 .actions button svg {width: 17px;height: 17px;}

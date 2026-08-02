@@ -23,6 +23,7 @@ suite('Notes integration', () => {
   beforeAll(async () => {
     const env: AppEnv = {
       APP_ORIGIN: 'http://localhost:5173',
+      ALLOW_INSECURE_SESSION_COOKIES: false,
       APP_VERSION: 'notes-test',
       DATABASE_URL: databaseUrl!,
       ENABLE_DEMO_SEED: false,
@@ -125,6 +126,14 @@ suite('Notes integration', () => {
       '2026-08-03',
       null,
     ]);
+    expect(listed.json().meta).toMatchObject({
+      page: 1,
+      pageSize: 10,
+      totalItems: 2,
+      totalPages: 1,
+      search: null,
+      sort: 'sessionDateDesc',
+    });
 
     const playerMembership = await database.prisma.membership.findFirstOrThrow({
       where: {campaignId: campaign.id, user: {name: 'Игрок'}},
@@ -145,7 +154,67 @@ suite('Notes integration', () => {
     });
   });
 
-  it('allows authors and owners to edit/delete and rejects a foreign player', async () => {
+  it('supports note search, sorting and pagination metadata', async () => {
+    const owner = await register('Мастер');
+    const campaign = await createCampaign(owner.cookie);
+    const player = await register('Игрок');
+    await joinCampaign(player.cookie, campaign.inviteUrl);
+
+    await app.inject({
+      method: 'POST',
+      url: `/api/campaigns/${campaign.id}/notes`,
+      headers: {cookie: player.cookie},
+      payload: {body: 'Разведка в северной башне', sessionDate: '2026-08-01'},
+    });
+    await app.inject({
+      method: 'POST',
+      url: `/api/campaigns/${campaign.id}/notes`,
+      headers: {cookie: owner.cookie},
+      payload: {body: 'Переговоры у причала', sessionDate: '2026-08-02'},
+    });
+    await app.inject({
+      method: 'POST',
+      url: `/api/campaigns/${campaign.id}/notes`,
+      headers: {cookie: player.cookie},
+      payload: {body: 'Мира нашла тайный ход', sessionDate: null},
+    });
+
+    const searched = await app.inject({
+      method: 'GET',
+      url: `/api/campaigns/${campaign.id}/notes?search=мира&sort=updatedAtAsc&pageSize=1`,
+      headers: {cookie: owner.cookie},
+    });
+    expect(searched.statusCode).toBe(200);
+    expect(searched.json()).toMatchObject({
+      items: [{body: 'Мира нашла тайный ход'}],
+      meta: {
+        page: 1,
+        pageSize: 1,
+        totalItems: 1,
+        totalPages: 1,
+        search: 'мира',
+        sort: 'updatedAtAsc',
+      },
+    });
+
+    const paged = await app.inject({
+      method: 'GET',
+      url: `/api/campaigns/${campaign.id}/notes?page=2&pageSize=2`,
+      headers: {cookie: owner.cookie},
+    });
+    expect(paged.statusCode).toBe(200);
+    expect(paged.json().items).toHaveLength(1);
+    expect(paged.json().meta).toMatchObject({
+      page: 2,
+      pageSize: 2,
+      totalItems: 3,
+      totalPages: 2,
+      search: null,
+      sort: 'sessionDateDesc',
+    });
+  });
+
+  it('allows authors to edit/delete only their own notes', async () => {
     const owner = await register('Мастер');
     const campaign = await createCampaign(owner.cookie);
     const player = await register('Игрок');
@@ -201,21 +270,38 @@ suite('Notes integration', () => {
     expect(forbiddenDelete.statusCode).toBe(403);
     expect(forbiddenDelete.json().error.code).toBe('FORBIDDEN');
 
-    const ownerEdit = await app.inject({
+    const ownerEditForeignNote = await app.inject({
       method: 'PATCH',
       url: `/api/campaigns/${campaign.id}/notes/${playerNoteId}`,
       headers: {cookie: owner.cookie},
       payload: {body: 'Обновлено мастером', sessionDate: null},
     });
-    expect(ownerEdit.statusCode).toBe(200);
-    expect(ownerEdit.json()).toMatchObject({body: 'Обновлено мастером', canEdit: true, canDelete: true});
+    expect(ownerEditForeignNote.statusCode).toBe(403);
+    expect(ownerEditForeignNote.json().error.code).toBe('FORBIDDEN');
 
-    const ownerDelete = await app.inject({
+    const ownerDeleteForeignNote = await app.inject({
       method: 'DELETE',
       url: `/api/campaigns/${campaign.id}/notes/${playerNoteId}`,
       headers: {cookie: owner.cookie},
     });
-    expect(ownerDelete.statusCode).toBe(204);
+    expect(ownerDeleteForeignNote.statusCode).toBe(403);
+    expect(ownerDeleteForeignNote.json().error.code).toBe('FORBIDDEN');
+
+    const ownerEditOwnNote = await app.inject({
+      method: 'PATCH',
+      url: `/api/campaigns/${campaign.id}/notes/${ownerNoteId}`,
+      headers: {cookie: owner.cookie},
+      payload: {body: 'Обновлено мастером', sessionDate: null},
+    });
+    expect(ownerEditOwnNote.statusCode).toBe(200);
+    expect(ownerEditOwnNote.json()).toMatchObject({body: 'Обновлено мастером', canEdit: true, canDelete: true});
+
+    const ownerDeleteOwnNote = await app.inject({
+      method: 'DELETE',
+      url: `/api/campaigns/${campaign.id}/notes/${ownerNoteId}`,
+      headers: {cookie: owner.cookie},
+    });
+    expect(ownerDeleteOwnNote.statusCode).toBe(204);
 
     const unknownNote = await app.inject({
       method: 'PATCH',

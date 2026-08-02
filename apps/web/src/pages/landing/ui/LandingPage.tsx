@@ -1,9 +1,12 @@
 import {Button} from '@gravity-ui/uikit';
 import {Link} from 'react-router-dom';
 
+import {useDocumentTitle} from '../../../shared/lib/use-document-title';
 import styles from './LandingPage.module.css';
 
 export function LandingPage() {
+  useDocumentTitle();
+
   return (
     <main className={styles.landing}>
       <nav className={styles.landingNav} aria-label="Основная навигация">
@@ -17,9 +20,8 @@ export function LandingPage() {
       <section className={styles.landingHero}>
         <p className={styles.eyebrow}>Дневник вашей партии</p>
         <h1>
-          Все истории кампании
-          <br />
-          за одним столом.
+          <span className={styles.titleLine}>Все истории кампании</span>{' '}
+          <span className={styles.titleLine}>за одним столом.</span>
         </h1>
         <p className={styles.landingCopy}>
           Персонажи, заметки и встречи с NPC — в общем пространстве, которое не потеряется между

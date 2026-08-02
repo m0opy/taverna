@@ -4,13 +4,14 @@
 .heading h2 {margin: 0;color: #241a14;font-size: 2rem;}
 .eyebrow {margin: 0 0 6px;color: #a36e2d;font-size: .7rem;font-weight: 700;letter-spacing: .15em;text-transform: uppercase;}
 .close {width: 32px;height: 32px;color: #72563e;font-size: 1.5rem;line-height: 1;background: transparent;border: 0;cursor: pointer;border-radius: 50%;}
+.close:disabled {color: #b8a896;cursor: wait;}
 .close:hover,.close:focus-visible {background: #f0e5d7;}
 .form {display: grid;gap: 18px;}
 .field {display: grid;gap: 7px;min-width: 0;color: #5e4b3e;font-weight: 700;}
 .field input,.field textarea {width: 100%;padding: 11px 12px;color: #2d211a;background: #fff;border: 1px solid #cfc1b1;border-radius: 9px;resize: vertical;}
 .field > input:focus-visible,.field > textarea:focus-visible,.tagInput:focus-within,.attitudeOption:has(input:focus-visible),.selectedAttitude:has(input:focus-visible) {outline: 2px solid var(--color-focus);outline-offset: 2px;}
 .field small {color: #a44335;font-weight: 400;}
-.counter {justify-self: end;color: #988a7b !important;font-size: .75rem;}
+.counter {justify-self: end;color: #746659 !important;font-size: .75rem;}
 .attitudes {display: grid;gap: 8px;padding: 0;border: 0;}
 .attitudes legend {margin-bottom: 0;color: #5e4b3e;font-weight: 700;}
 .attitudeOptions {display: grid;grid-template-columns: repeat(4, 1fr);gap: 7px;}
@@ -21,7 +22,7 @@
 .tagInput:focus-within {border-color: var(--color-accent);box-shadow: 0 0 0 2px var(--color-focus);}
 .tagInput > input,.tagInput > input:focus,.tagInput > input:focus-visible {padding: 5px 2px;border: 0;outline: 0;box-shadow: none;}
 .tagList {display: flex;flex-wrap: wrap;gap: 6px;}
-.tag {display: inline-flex;align-items: center;gap: 5px;padding: 5px 8px;color: #70522e;font-size: .78rem;background: #f1e8da;border-radius: 999px;}
+.tag {display: inline-flex;align-items: center;gap: 5px;padding: 5px 8px;color: #61411f;font-size: .78rem;background: #f1e8da;border-radius: 999px;overflow-wrap: anywhere;}
 .tag button {width: 18px;height: 18px;padding: 0;color: #815a37;background: transparent;border: 0;border-radius: 50%;cursor: pointer;}
 .error {margin: 0;padding: 10px 12px;color: #9d3f32;background: #f8dfd9;border-radius: 8px;}
 .actions {display: flex;flex-wrap: wrap;gap: 10px;padding-top: 4px;}

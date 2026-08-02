@@ -23,3 +23,5 @@ apps/api/prisma/dev.db
 .omx/state/
 .omx/metrics.json
 .omx/
+
+.creds

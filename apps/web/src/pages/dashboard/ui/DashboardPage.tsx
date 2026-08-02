@@ -1,11 +1,13 @@
 import {Button} from '@gravity-ui/uikit';
 import {useNavigate} from 'react-router-dom';
 
+import {useDocumentTitle} from '../../../shared/lib/use-document-title';
 import {CampaignList} from '../../../widgets/campaign-list/ui/CampaignList';
 import styles from './DashboardPage.module.css';
 
 export function DashboardPage() {
   const navigate = useNavigate();
+  useDocumentTitle('Ваши кампании');
 
   return (
     <main className={styles.page}>

@@ -50,4 +50,16 @@ describe('auth request boundaries', () => {
 
     await expect(meQuery.queryFn()).resolves.toEqual(user);
   });
+
+  it('treats a 401 session check as a logged-out state instead of a route-breaking error', async () => {
+    vi.stubGlobal('fetch', vi.fn(async () => new Response(JSON.stringify({error: {
+      code: 'SESSION_EXPIRED',
+      message: 'Session expired',
+    }}), {
+      status: 401,
+      headers: {'Content-Type': 'application/json'},
+    })));
+
+    await expect(meQuery.queryFn()).resolves.toBeNull();
+  });
 });

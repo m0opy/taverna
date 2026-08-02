@@ -1,4 +1,4 @@
-import {afterAll, afterEach, beforeAll, describe, expect, it} from 'vitest';
+import {afterAll, afterEach, beforeAll, describe, expect, it, vi} from 'vitest';
 
 import {buildApp} from '../src/app.js';
 import {createDatabaseContext, type DatabaseContext} from '../src/lib/database.js';
@@ -19,8 +19,11 @@ suite('Task 002 auth and campaign integration', () => {
   let app: Awaited<ReturnType<typeof buildApp>>;
 
   beforeAll(async () => {
+    vi.useFakeTimers({toFake: ['Date']});
+    vi.setSystemTime(new Date('2026-08-02T12:00:00.000Z'));
     const env: AppEnv = {
       APP_ORIGIN: 'http://localhost:5173',
+      ALLOW_INSECURE_SESSION_COOKIES: false,
       APP_VERSION: 'task-002-test',
       DATABASE_URL: databaseUrl!,
       DEMO_EMAIL: 'guest@example.com',
@@ -44,6 +47,7 @@ suite('Task 002 auth and campaign integration', () => {
   afterAll(async () => {
     await app.close();
     await database.close();
+    vi.useRealTimers();
   });
 
   async function register(name: string, email: string) {
@@ -75,6 +79,7 @@ suite('Task 002 auth and campaign integration', () => {
     expect(logout.body).toBe('');
     expect(String(logout.headers['set-cookie'])).toContain('Max-Age=0');
   });
+
 
   it('logs into the configured demo account through the guest flow', async () => {
     await register('Демо-гость', 'guest@example.com');
@@ -115,6 +120,15 @@ suite('Task 002 auth and campaign integration', () => {
     expect(preview.json()).toMatchObject({title: 'Тихая гавань', ownerName: 'Мастер', membersCount: 1, isFull: false});
 
     const player = await register('Игрок', 'player@example.com');
+    const tooLongClass = await app.inject({
+      method: 'POST',
+      url: `/api/invites/${token}/join`,
+      headers: {cookie: player.cookie},
+      payload: {characterName: 'Мира', characterClass: 'x'.repeat(61)},
+    });
+    expect(tooLongClass.statusCode).toBe(400);
+    expect(tooLongClass.json().error.fields).toMatchObject({characterClass: expect.any(String)});
+
     const joined = await app.inject({method: 'POST', url: `/api/invites/${token}/join`, headers: {cookie: player.cookie}, payload: {characterName: 'Мира', characterClass: 'Следопыт'}});
     expect(joined.statusCode).toBe(201);
     expect(joined.json()).toMatchObject({campaignId: campaign.id, membership: {characterName: 'Мира', isOwner: false}});
@@ -140,9 +154,16 @@ suite('Task 002 auth and campaign integration', () => {
     expect(forbidden.statusCode).toBe(403);
     const invalidDate = await app.inject({method: 'PATCH', url: `/api/campaigns/${campaign.id}`, headers: {cookie: owner.cookie}, payload: {nextSessionAt: '2026-02-30'}});
     expect(invalidDate.statusCode).toBe(400);
+    expect(invalidDate.json().error.fields).toMatchObject({nextSessionAt: expect.any(String)});
+    const pastDate = await app.inject({method: 'PATCH', url: `/api/campaigns/${campaign.id}`, headers: {cookie: owner.cookie}, payload: {nextSessionAt: '2026-08-01'}});
+    expect(pastDate.statusCode).toBe(400);
+    expect(pastDate.json().error.fields).toMatchObject({nextSessionAt: 'Choose today or a future date'});
     const updated = await app.inject({method: 'PATCH', url: `/api/campaigns/${campaign.id}`, headers: {cookie: owner.cookie}, payload: {title: 'Новая башня', synopsis: 'Туман', coverKey: 'city', nextSessionAt: '2026-08-12'}});
     expect(updated.statusCode).toBe(200);
     expect(updated.json()).toMatchObject({title: 'Новая башня', nextSessionAt: '2026-08-12'});
+    const todayDate = await app.inject({method: 'PATCH', url: `/api/campaigns/${campaign.id}`, headers: {cookie: owner.cookie}, payload: {nextSessionAt: '2026-08-02'}});
+    expect(todayDate.statusCode).toBe(200);
+    expect(todayDate.json().nextSessionAt).toBe('2026-08-02');
     const cleared = await app.inject({method: 'PATCH', url: `/api/campaigns/${campaign.id}`, headers: {cookie: owner.cookie}, payload: {nextSessionAt: null}});
     expect(cleared.json().nextSessionAt).toBeNull();
 

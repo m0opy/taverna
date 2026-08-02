@@ -1,4 +1,4 @@
-import { noteWriteRequestSchema } from '@taverna/contracts';
+import {noteListQuerySchema, noteWriteRequestSchema} from '@taverna/contracts';
 import { z } from 'zod';
 
 import { AppError } from '../../lib/errors.js';
@@ -13,6 +13,10 @@ export const noteParamsSchema = notesParamsSchema.extend({
 
 export function parseNoteWriteRequest(body: unknown) {
   return noteWriteRequestSchema.parse(body);
+}
+
+export function parseNoteListQuery(query: unknown) {
+  return noteListQuerySchema.parse(query);
 }
 
 export function calendarDateToDate(value: string | null | undefined): Date | null {

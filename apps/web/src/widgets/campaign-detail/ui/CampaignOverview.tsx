@@ -24,6 +24,7 @@ export function CampaignOverview({campaignId, coverKey, isOwner, nextSessionAt, 
   const [isDateEditorOpen, setIsDateEditorOpen] = useState(false);
   const [expandedSynopsisHeight, setExpandedSynopsisHeight] = useState(COLLAPSED_SYNOPSIS_HEIGHT);
   const synopsisWrapRef = useRef<HTMLDivElement>(null);
+  const sessionButtonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     const element = synopsisWrapRef.current;
@@ -49,6 +50,10 @@ export function CampaignOverview({campaignId, coverKey, isOwner, nextSessionAt, 
   };
 
   const shouldShowMask = isCollapsible && !isExpanded;
+  const closeDateEditor = () => {
+    setIsDateEditorOpen(false);
+    requestAnimationFrame(() => sessionButtonRef.current?.focus());
+  };
 
   return (
     <section className={`${styles.hero} ${coverStyles[coverKey]} ${shouldShowMask ? styles.collapsible : ''} ${isExpanded ? styles.expanded : ''}`}>
@@ -78,9 +83,9 @@ export function CampaignOverview({campaignId, coverKey, isOwner, nextSessionAt, 
         <span>Следующая игра</span>
         <strong>{nextSessionAt ? formatCampaignDate(nextSessionAt) : 'Дата не назначена'}</strong>
         {nextSessionAt && <small>{formatNextSessionMeta(nextSessionAt)}</small>}
-        {isOwner && <button className={styles.sessionButton} type="button" onClick={() => setIsDateEditorOpen(true)}>{nextSessionAt ? 'Изменить' : 'Назначить'}</button>}
+        {isOwner && <button className={styles.sessionButton} ref={sessionButtonRef} type="button" onClick={() => setIsDateEditorOpen(true)}>{nextSessionAt ? 'Изменить' : 'Назначить'}</button>}
       </div>
-      {isDateEditorOpen && <div className={styles.editorBackdrop} onMouseDown={(event) => event.target === event.currentTarget && setIsDateEditorOpen(false)}><NextSessionEditor campaignId={campaignId} nextSessionAt={nextSessionAt} onClose={() => setIsDateEditorOpen(false)} /></div>}
+      {isDateEditorOpen && <div className={styles.editorBackdrop} onMouseDown={(event) => event.target === event.currentTarget && closeDateEditor()}><NextSessionEditor campaignId={campaignId} nextSessionAt={nextSessionAt} onClose={closeDateEditor} /></div>}
     </section>
   );
 }

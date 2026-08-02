@@ -16,6 +16,7 @@ export function CampaignTabs({campaignId, isOwner, section}: CampaignTabsProps) 
         .filter(([key]) => key !== 'settings' || isOwner)
         .map(([key, label]) => (
           <Link
+            aria-current={section === key ? 'page' : undefined}
             className={section === key ? `${styles.item} ${styles.active}` : styles.item}
             key={key}
             to={key === 'home' ? `/c/${campaignId}` : `/c/${campaignId}/${key}`}

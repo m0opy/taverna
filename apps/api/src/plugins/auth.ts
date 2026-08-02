@@ -29,7 +29,7 @@ export async function registerAuth(app: FastifyInstance, env: AppEnv): Promise<v
   const cookieOptions = {
     httpOnly: true,
     sameSite: 'lax' as const,
-    secure: env.NODE_ENV === 'production',
+    secure: env.NODE_ENV === 'production' && !env.ALLOW_INSECURE_SESSION_COOKIES,
     path: '/',
   };
 

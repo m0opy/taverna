@@ -1,4 +1,4 @@
-import {Suspense, type ReactNode} from 'react';
+import {Suspense, useEffect, type ReactNode} from 'react';
 import {Outlet, useLocation} from 'react-router-dom';
 
 import {PageErrorBoundary} from '../PageErrorBoundary/PageErrorBoundary';
@@ -7,8 +7,12 @@ import {PageLoader} from '../PageLoader/PageLoader';
 export function PageBoundary({children}: {children: ReactNode}) {
   const {pathname} = useLocation();
 
+  useEffect(() => {
+    window.scrollTo({top: 0, left: 0});
+  }, [pathname]);
+
   return (
-    <PageErrorBoundary key={pathname}>
+    <PageErrorBoundary key={pathname} pathname={pathname}>
       <Suspense fallback={<PageLoader />}>
         {children}
       </Suspense>

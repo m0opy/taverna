@@ -19,9 +19,17 @@ export function NpcList({availableTags, deletingNpcId, items, selectedTag, onCre
     <>
       {(items.length > 0 || availableTags.length > 0) && (
         <nav className={styles.filters} aria-label="Фильтр NPC по тегам">
-          <button className={!selectedTag ? styles.selectedFilter : styles.filter} type="button" onClick={() => onTagChange()}>Все</button>
+          <button aria-pressed={!selectedTag} className={!selectedTag ? styles.selectedFilter : styles.filter} type="button" onClick={() => onTagChange()}>
+            Все
+          </button>
           {availableTags.map((tag) => (
-            <button className={selectedTag?.toLocaleLowerCase() === tag.toLocaleLowerCase() ? styles.selectedFilter : styles.filter} key={tag} type="button" onClick={() => onTagChange(tag)}>
+            <button
+              aria-pressed={selectedTag?.toLocaleLowerCase() === tag.toLocaleLowerCase()}
+              className={selectedTag?.toLocaleLowerCase() === tag.toLocaleLowerCase() ? styles.selectedFilter : styles.filter}
+              key={tag}
+              type="button"
+              onClick={() => onTagChange(tag)}
+            >
               {tag}
             </button>
           ))}

@@ -1,6 +1,6 @@
 import {useMutation, useQueryClient} from '@tanstack/react-query';
 
-import {notesQueryKey} from '../../../../entities/note/api/use-notes';
+import {allNotesQueryKey} from '../../../../entities/note/api/use-notes';
 import {apiRequest} from '../../../../shared/api/client';
 
 export function useDeleteNote(campaignId: string) {
@@ -11,7 +11,7 @@ export function useDeleteNote(campaignId: string) {
       method: 'DELETE',
     }),
     onSuccess: () => {
-      void queryClient.invalidateQueries({queryKey: notesQueryKey(campaignId)});
+      void queryClient.invalidateQueries({queryKey: allNotesQueryKey(campaignId)});
     },
   });
 }

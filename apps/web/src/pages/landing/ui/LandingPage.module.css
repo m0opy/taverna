@@ -41,6 +41,10 @@
   margin-bottom: 30px;
 }
 
+.titleLine {
+  display: block;
+}
+
 .landingCopy {
   max-width: 650px;
   margin-bottom: 34px;

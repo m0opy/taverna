@@ -11,8 +11,6 @@
 .errorState {display: grid;min-height: 300px;place-items: center;align-content: center;padding: 32px;text-align: center;border: 1px solid var(--color-line);border-radius: var(--radius-surface);background: var(--color-surface-muted);}
 .errorState h2 {margin-bottom: 8px;color: var(--color-ink);}
 .errorState p:not(.eyebrow) {max-width: 440px;color: var(--color-ink-muted);line-height: 1.6;}
-.retryButton {padding: 10px 14px;color: var(--color-accent-strong);background: transparent;border: 1px solid #b9966c;border-radius: 8px;cursor: pointer;}
-.retryButton:hover,.retryButton:focus-visible {background: var(--color-accent-soft);}
 @keyframes shimmer {to {background-position: -200% 0;}}
 @media (prefers-reduced-motion: reduce) {.loadingState span {animation: none;}}
 @media (max-width: 640px) {

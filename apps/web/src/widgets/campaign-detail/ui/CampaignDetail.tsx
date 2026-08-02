@@ -1,9 +1,12 @@
 import type {CampaignDetailDto} from '@taverna/contracts';
-import {useParams} from 'react-router-dom';
+import {Button} from '@gravity-ui/uikit';
+import {useEffect} from 'react';
+import {useLocation, useNavigate, useParams} from 'react-router-dom';
 
 import {useCampaign} from '../../../entities/campaign/api/use-campaigns';
 import {campaignSections, type CampaignSection} from '../../../entities/campaign/model/presentation';
 import {ApiError} from '../../../shared/api/client';
+import {useDocumentTitle} from '../../../shared/lib/use-document-title';
 import {Badge} from '../../../shared/ui/badge';
 import {CampaignInvitePanel} from './CampaignInvitePanel';
 import {CampaignMembers} from './CampaignMembers';
@@ -14,6 +17,22 @@ import styles from './CampaignDetail.module.css';
 export function CampaignDetail({section}: {section: CampaignSection}) {
   const {id = ''} = useParams<{id: string}>();
   const campaign = useCampaign(id);
+  const location = useLocation();
+  const navigate = useNavigate();
+  const title = campaign.data
+    ? section === 'home' ? campaign.data.title : campaignSections[section]
+    : section === 'home' ? 'Кампания' : campaignSections[section];
+  const subtitle = campaign.data && section !== 'home' ? campaign.data.title : undefined;
+  const notice = typeof location.state === 'object' && location.state && 'notice' in location.state && typeof location.state.notice === 'string'
+    ? location.state.notice
+    : null;
+
+  useDocumentTitle(title, subtitle);
+
+  useEffect(() => {
+    if (!notice) return;
+    navigate({pathname: location.pathname, search: location.search, hash: location.hash}, {replace: true, state: null});
+  }, [location.hash, location.pathname, location.search, navigate, notice]);
 
   if (campaign.isPending) {
     return <CampaignDetailLoadingState />;
@@ -24,7 +43,7 @@ export function CampaignDetail({section}: {section: CampaignSection}) {
     return <CampaignDetailErrorState status={status} onRetry={() => void campaign.refetch()} />;
   }
 
-  return <CampaignDetailView campaign={campaign.data} id={id} section={section} />;
+  return <CampaignDetailView campaign={campaign.data} id={id} notice={notice} section={section} />;
 }
 
 export function CampaignDetailLoadingState() {
@@ -39,19 +58,21 @@ export function CampaignDetailErrorState({status, onRetry}: {status: number | nu
       ? 'Проверьте ссылку или вернитесь к списку кампаний.'
       : 'Проверьте соединение и попробуйте ещё раз.';
 
+  useDocumentTitle(title);
+
   return (
     <main className={styles.page}>
       <section className={styles.errorState} role="alert">
         <p className={styles.eyebrow}>{status ?? 'Ошибка'}</p>
         <h2>{title}</h2>
         <p>{message}</p>
-        <button className={styles.retryButton} type="button" onClick={onRetry}>Повторить</button>
+        <Button view="action" size="l" onClick={onRetry}>Повторить</Button>
       </section>
     </main>
   );
 }
 
-export function CampaignDetailView({campaign, id, section}: {campaign: CampaignDetailDto; id: string; section: CampaignSection}) {
+export function CampaignDetailView({campaign, id, notice, section}: {campaign: CampaignDetailDto; id: string; notice?: string | null; section: CampaignSection}) {
   const isOwner = campaign.myRole === 'master';
 
   return (
@@ -63,6 +84,7 @@ export function CampaignDetailView({campaign, id, section}: {campaign: CampaignD
         </div>
         <Badge>{isOwner ? 'Мастер' : 'Участник'}</Badge>
       </header>
+      {notice && <p className={styles.notice} role="status">{notice}</p>}
       <CampaignTabs campaignId={id} isOwner={isOwner} section={section} />
       {section !== 'home' ? (
         <section className={styles.placeholder}>
@@ -75,7 +97,7 @@ export function CampaignDetailView({campaign, id, section}: {campaign: CampaignD
           <CampaignOverview campaignId={id} coverKey={campaign.coverKey} isOwner={isOwner} nextSessionAt={campaign.nextSessionAt} synopsis={campaign.synopsis} />
           <div className={styles.columns}>
             <CampaignMembers members={campaign.members} membersCount={campaign.membersCount} />
-            <CampaignInvitePanel inviteUrl={campaign.inviteUrl} />
+            <CampaignInvitePanel campaignId={id} inviteUrl={campaign.inviteUrl} myMembershipId={campaign.myMembershipId} />
           </div>
         </>
       )}

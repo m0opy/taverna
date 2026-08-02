@@ -1,5 +1,10 @@
 import {Prisma, type PrismaClient} from '@prisma/client';
-import type {NpcDto, NpcListResponse, NpcWriteRequest} from '@taverna/contracts';
+import {
+  hasDuplicateNpcRelationTargets,
+  type NpcDto,
+  type NpcListResponse,
+  type NpcWriteRequest,
+} from '@taverna/contracts';
 
 import {AppError} from '../../lib/errors.js';
 import {
@@ -82,6 +87,12 @@ async function validateRelations(
   relations: NpcWriteRequest['relations'],
 ) {
   const normalized = relations ?? [];
+  if (hasDuplicateNpcRelationTargets(normalized)) {
+    throw new AppError(400, 'VALIDATION_ERROR', 'Validation failed', {
+      fields: {relations: 'Нельзя добавить связь с одним NPC дважды.'},
+    });
+  }
+
   if (normalized.some((relation) => relation.toNpcId === fromNpcId)) {
     throw new AppError(400, 'NPC_SELF_RELATION', 'NPC cannot relate to itself');
   }

@@ -14,8 +14,8 @@ export function useJoinCampaign(token: string) {
   const queryClient = useQueryClient();
   const me = useCurrentUser();
   const preview = useInvitePreview(token);
-  const [characterName, setCharacterName] = useState('');
-  const [characterClass, setCharacterClass] = useState('');
+  const [characterName, setCharacterNameState] = useState('');
+  const [characterClass, setCharacterClassState] = useState('');
   const [characterInfo, setCharacterInfo] = useState('');
   const join = useMutation({
     mutationFn: () => apiRequest<JoinCampaignResponse>(`/invites/${token}/join`, {
@@ -24,7 +24,7 @@ export function useJoinCampaign(token: string) {
     }),
     onSuccess: (result) => {
       void queryClient.invalidateQueries({queryKey: ['campaigns']});
-      navigate(`/c/${result.campaignId}`, {replace: true});
+      navigate(`/c/${result.campaignId}`, {replace: true, state: {notice: 'Вы вступили в кампанию.'}});
     },
     onError: (error) => {
       const redirect = resolveJoinErrorRedirect(error, token);
@@ -37,12 +37,16 @@ export function useJoinCampaign(token: string) {
     join.mutate();
   };
 
+  const setCharacterName = (value: string) => setCharacterNameState(value.slice(0, 40));
+  const setCharacterClass = (value: string) => setCharacterClassState(value.slice(0, 60));
+
   return {
     characterClass,
     characterInfo,
     characterName,
-    isGuest: me.error instanceof ApiError && me.error.status === 401,
+    isGuest: me.isSuccess && me.data === null,
     isPending: join.isPending,
+    joinFieldErrors: join.error instanceof ApiError ? join.error.fields : undefined,
     joinError: join.error instanceof ApiError ? join.error : null,
     me,
     preview,

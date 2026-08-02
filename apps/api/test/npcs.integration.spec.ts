@@ -23,6 +23,7 @@ suite('NPC integration', () => {
   beforeAll(async () => {
     const env: AppEnv = {
       APP_ORIGIN: 'http://localhost:5173',
+      ALLOW_INSECURE_SESSION_COOKIES: false,
       APP_VERSION: 'npc-test',
       DATABASE_URL: databaseUrl!,
       ENABLE_DEMO_SEED: false,
@@ -184,6 +185,23 @@ suite('NPC integration', () => {
     });
     expect(crossCampaign.statusCode).toBe(404);
     expect(crossCampaign.json().error.code).toBe('RELATED_NPC_NOT_FOUND');
+
+    const duplicateRelation = await app.inject({
+      method: 'PATCH',
+      url: `/api/campaigns/${firstCampaign.id}/npcs/${fromNpc.id}`,
+      headers: {cookie: owner.cookie},
+      payload: {
+        name: 'Герой',
+        relations: [
+          {toNpcId: targetNpc.id, label: 'ищет помощи'},
+          {toNpcId: targetNpc.id, label: 'дублирует'},
+        ],
+      },
+    });
+    expect(duplicateRelation.statusCode).toBe(400);
+    expect(duplicateRelation.json().error.fields).toMatchObject({
+      relations: 'Нельзя добавить связь с одним NPC дважды.',
+    });
 
     const validRelation = await app.inject({
       method: 'PATCH',

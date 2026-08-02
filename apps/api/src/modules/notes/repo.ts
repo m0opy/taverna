@@ -1,6 +1,7 @@
 import type { Prisma, PrismaClient } from '@prisma/client';
 
 export type NotesDb = PrismaClient | Prisma.TransactionClient;
+export type NoteListOrder = Prisma.NoteOrderByWithRelationInput[];
 
 const noteInclude = {
   author: {
@@ -43,8 +44,44 @@ export function listNotes(db: NotesDb, campaignId: string) {
   });
 }
 
-export function countNotes(db: NotesDb, campaignId: string) {
-  return db.note.count({where: {campaignId}});
+type NoteListFilters = {
+  campaignId: string;
+  orderBy: NoteListOrder;
+  search?: string;
+  skip?: number;
+  take?: number;
+};
+
+function noteSearchWhere(search?: string): Prisma.NoteWhereInput | undefined {
+  if (!search) {
+    return undefined;
+  }
+
+  return {
+    body: {contains: search, mode: 'insensitive'},
+  };
+}
+
+export function listNotesPage(db: NotesDb, filters: NoteListFilters) {
+  return db.note.findMany({
+    where: {
+      campaignId: filters.campaignId,
+      ...noteSearchWhere(filters.search),
+    },
+    include: noteInclude,
+    orderBy: filters.orderBy,
+    skip: filters.skip,
+    take: filters.take,
+  });
+}
+
+export function countNotes(db: NotesDb, campaignId: string, search?: string) {
+  return db.note.count({
+    where: {
+      campaignId,
+      ...noteSearchWhere(search),
+    },
+  });
 }
 
 export function createNote(

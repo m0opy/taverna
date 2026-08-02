@@ -3,6 +3,7 @@ import type { FastifyInstance } from 'fastify';
 import type { DatabaseHealthcheck } from '../../lib/database.js';
 
 export interface HealthModuleOptions {
+  demoLoginAvailable: boolean;
   healthcheck: DatabaseHealthcheck;
   version: string;
 }
@@ -16,6 +17,7 @@ export async function registerHealthModule(
       await withTimeout(options.healthcheck(), 2_000);
 
       return reply.status(200).send({
+        demoLoginAvailable: options.demoLoginAvailable,
         status: 'ok',
         database: 'up',
         version: options.version,
@@ -23,6 +25,7 @@ export async function registerHealthModule(
       });
     } catch {
       return reply.status(503).send({
+        demoLoginAvailable: options.demoLoginAvailable,
         status: 'degraded',
         database: 'down',
       });

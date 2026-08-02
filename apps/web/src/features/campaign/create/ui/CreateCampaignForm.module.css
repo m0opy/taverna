@@ -34,16 +34,14 @@
   border: 2px solid transparent;
   border-radius: var(--radius-control);
   color: #fff8ee;
+  background-color: rgb(var(--cover-rgb, 33 23 15));
+  background-image: linear-gradient(180deg, rgb(var(--cover-rgb, 18 13 9) / .27) 0%, rgb(var(--cover-rgb, 18 13 9) / .7) 100%), linear-gradient(90deg, rgb(var(--cover-rgb, 18 13 9) / .24) 0%, rgb(var(--cover-rgb, 18 13 9) / .1) 72%), var(--cover-image);
+  background-position: center, center, var(--cover-position, center);
+  background-repeat: no-repeat;
+  background-size: cover;
   cursor: pointer;
   transition: transform .16s ease, border-color .16s ease, box-shadow .16s ease;
 }
-
-.forest { background: linear-gradient(135deg, #405c43, #1b2b20); }
-.dungeon { background: linear-gradient(135deg, #464353, #201f28); }
-.tavern { background: linear-gradient(135deg, #6d4931, #2c2119); }
-.sea { background: linear-gradient(135deg, #2f6075, #192f39); }
-.mountains { background: linear-gradient(135deg, #6c625a, #302c29); }
-.city { background: linear-gradient(135deg, #765344, #30211c); }
 
 .coverOption:hover {
   transform: translateY(-2px);

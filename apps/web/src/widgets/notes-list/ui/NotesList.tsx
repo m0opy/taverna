@@ -10,18 +10,35 @@ interface NotesListProps {
   onCreate: () => void;
   onDelete: (note: NoteDto) => void;
   onEdit: (note: NoteDto) => void;
+  search?: string;
+  showEmptyState?: boolean;
 }
 
-export function NotesList({deletingNoteId, items, onCreate, onDelete, onEdit}: NotesListProps) {
+export function NotesList({
+  deletingNoteId,
+  items,
+  onCreate,
+  onDelete,
+  onEdit,
+  search,
+  showEmptyState = true,
+}: NotesListProps) {
   if (items.length === 0) {
+    if (!showEmptyState) {
+      return null;
+    }
+
+    const hasSearch = Boolean(search?.trim());
     return (
       <section className={styles.emptyState}>
         <div className={styles.emptySigil} aria-hidden="true">✦</div>
-        <h2>Пока нет ни одной заметки</h2>
-        <p>Запишите, что произошло на последней сессии.</p>
-        <button className={styles.primaryAction} type="button" onClick={onCreate}>
-          Написать заметку
-        </button>
+        <h2>{hasSearch ? 'Ничего не найдено' : 'Пока нет ни одной заметки'}</h2>
+        <p>{hasSearch ? 'Попробуйте изменить запрос или очистить поиск.' : 'Запишите, что произошло на последней сессии.'}</p>
+        {!hasSearch && (
+          <button className={styles.primaryAction} type="button" onClick={onCreate}>
+            Написать заметку
+          </button>
+        )}
       </section>
     );
   }

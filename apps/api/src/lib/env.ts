@@ -2,6 +2,10 @@ import { z } from 'zod';
 
 const appEnvSchema = z.strictObject({
   APP_VERSION: z.string().trim().min(1).default('0.1.0'),
+  ALLOW_INSECURE_SESSION_COOKIES: z
+    .enum(['true', 'false', '1', '0'])
+    .default('false')
+    .transform((value) => value === 'true' || value === '1'),
   APP_ORIGIN: z.string().url().default('http://localhost:5173'),
   DATABASE_URL: z.string().trim().min(1),
   DEMO_EMAIL: z.string().trim().email().default('demo@tavern.app'),
@@ -24,6 +28,7 @@ export function parseAppEnv(
 ): AppEnv {
   return appEnvSchema.parse({
     APP_VERSION: source.APP_VERSION,
+    ALLOW_INSECURE_SESSION_COOKIES: source.ALLOW_INSECURE_SESSION_COOKIES,
     APP_ORIGIN: source.APP_ORIGIN,
     DATABASE_URL: source.DATABASE_URL,
     DEMO_EMAIL: source.DEMO_EMAIL,

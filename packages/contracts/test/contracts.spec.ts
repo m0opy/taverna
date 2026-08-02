@@ -53,6 +53,21 @@ describe('contracts', () => {
     });
   });
 
+  it('rejects overlong character class fields in join and update payloads', () => {
+    expect(() =>
+      joinCampaignRequestSchema.parse({
+        characterName: 'Мира',
+        characterClass: 'x'.repeat(61),
+      }),
+    ).toThrow();
+
+    expect(() =>
+      updateCharacterRequestSchema.parse({
+        characterClass: 'x'.repeat(61),
+      }),
+    ).toThrow();
+  });
+
   it('requires non-empty partial campaign updates', () => {
     expect(() => updateCampaignRequestSchema.parse({})).toThrow();
   });

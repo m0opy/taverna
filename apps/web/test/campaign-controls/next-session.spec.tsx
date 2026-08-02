@@ -16,7 +16,7 @@ describe('campaign next-session controls', () => {
 
     expect(markup).toContain('12 августа 2026');
     expect(markup).toContain('Изменить');
-    expect(markup).toContain('среда');
+    expect(markup).toContain('Среда');
   });
 
   it('keeps date controls read-only for a player and supports clearing for an owner editor', () => {
@@ -27,5 +27,13 @@ describe('campaign next-session controls', () => {
     expect(player).not.toContain('Назначить');
     expect(ownerEditor).toContain('Очистить дату');
     expect(ownerEditor).toContain('type="date"');
+  });
+
+  it('treats August 2, 2026 as the first allowed date and autofocuses the modal editor input', () => {
+    const modalEditor = render(<NextSessionEditor campaignId="campaign-1" nextSessionAt={null} onClose={() => undefined} />);
+
+    expect(modalEditor).toContain('role="dialog"');
+    expect(modalEditor).toContain('min="2026-08-02"');
+    expect(modalEditor).toContain('autofocus=""');
   });
 });

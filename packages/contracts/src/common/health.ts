@@ -6,6 +6,7 @@ export const healthStatusSchema = z.enum(['ok', 'degraded']);
 export const healthDatabaseStateSchema = z.enum(['up', 'down']);
 
 export const healthOkResponseSchema = z.strictObject({
+  demoLoginAvailable: z.boolean(),
   status: healthStatusSchema,
   database: healthDatabaseStateSchema,
   version: z.string().min(1),
@@ -13,6 +14,7 @@ export const healthOkResponseSchema = z.strictObject({
 });
 
 export const healthDegradedResponseSchema = z.strictObject({
+  demoLoginAvailable: z.boolean(),
   status: z.literal('degraded'),
   database: z.literal('down'),
 });

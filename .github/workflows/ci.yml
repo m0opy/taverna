@@ -67,7 +67,8 @@ jobs:
       POSTGRES_PASSWORD: taverna
       API_IMAGE: taverna-api:ci
       WEB_IMAGE: taverna-web:ci
-      DOMAIN: localhost
+      APP_ORIGIN: http://localhost
+      ALLOW_INSECURE_SESSION_COOKIES: "false"
       JWT_SECRET: test-secret-at-least-32-characters-long
       APP_VERSION: ci
       DEMO_PASSWORD: test-demo-password
@@ -85,6 +86,8 @@ jobs:
 
       - name: Build web production image
         run: docker build --target production --file apps/web/Dockerfile --tag "$WEB_IMAGE" .
+      - name: Validate Nginx configuration
+        run: docker run --rm --add-host api:127.0.0.1 --entrypoint nginx "$WEB_IMAGE" -t
 
       - name: Start development stack
         run: docker compose -f infra/compose.dev.yml up --build -d
@@ -95,3 +98,33 @@ jobs:
       - name: Tear down development stack
         if: always()
         run: docker compose -f infra/compose.dev.yml down --volumes --remove-orphans
+
+  deploy:
+    needs: [quality, container-smoke]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    environment: production
+    permissions: {}
+    concurrency:
+      group: production-deploy
+      cancel-in-progress: false
+    env:
+      DEPLOY_HOST: ${{ vars.DEPLOY_HOST }}
+      DEPLOY_SSH_KNOWN_HOSTS: ${{ vars.DEPLOY_SSH_KNOWN_HOSTS }}
+      DEPLOY_USER: ${{ vars.DEPLOY_USER }}
+      DEPLOY_SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}
+    steps:
+      - name: Deploy current main commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          : "${DEPLOY_HOST:?production DEPLOY_HOST is required}"
+          : "${DEPLOY_USER:?production DEPLOY_USER is required}"
+          : "${DEPLOY_SSH_KNOWN_HOSTS:?production DEPLOY_SSH_KNOWN_HOSTS is required}"
+          : "${DEPLOY_SSH_PRIVATE_KEY:?production DEPLOY_SSH_PRIVATE_KEY is required}"
+          install --directory --mode=0700 "$HOME/.ssh"
+          printf '%s\n' "$DEPLOY_SSH_PRIVATE_KEY" > "$HOME/.ssh/id_ed25519"
+          printf '%s\n' "$DEPLOY_SSH_KNOWN_HOSTS" > "$HOME/.ssh/known_hosts"
+          chmod 0600 "$HOME/.ssh/id_ed25519" "$HOME/.ssh/known_hosts"
+          ssh -i "$HOME/.ssh/id_ed25519" -o BatchMode=yes -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile="$HOME/.ssh/known_hosts" "$DEPLOY_USER@$DEPLOY_HOST" "deploy $GITHUB_SHA"

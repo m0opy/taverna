@@ -8,6 +8,11 @@
   overflow: hidden;
   border-radius: var(--radius-surface);
   color: #fff6e8;
+  background-color: rgb(var(--cover-rgb, 33 23 15));
+  background-image: linear-gradient(180deg, rgb(var(--cover-rgb, 18 13 9) / .12) 0%, rgb(var(--cover-rgb, 18 13 9) / .42) 50%, rgb(var(--cover-rgb, 18 13 9) / .94) 100%), linear-gradient(90deg, rgb(var(--cover-rgb, 18 13 9) / .46) 0%, rgb(var(--cover-rgb, 18 13 9) / .12) 68%), var(--cover-image);
+  background-position: center, center, var(--cover-position, center);
+  background-repeat: no-repeat;
+  background-size: cover;
   text-decoration: none;
   box-shadow: 0 14px 35px rgba(55, 39, 22, .13);
   transition: transform .18s ease, box-shadow .18s ease;

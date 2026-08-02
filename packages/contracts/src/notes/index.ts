@@ -4,6 +4,7 @@ import { authorDtoSchema } from '../memberships/index.js';
 import {
   calendarDateSchema,
   isoTimestampSchema,
+  trimmedString,
   uuidSchema,
 } from '../common/validators.js';
 
@@ -24,10 +25,37 @@ export const noteWriteRequestSchema = z.strictObject({
   sessionDate: z.union([calendarDateSchema, z.null()]).optional(),
 });
 
+export const noteListSortSchema = z.enum([
+  'sessionDateDesc',
+  'sessionDateAsc',
+  'updatedAtDesc',
+  'updatedAtAsc',
+]);
+
+export const noteListQuerySchema = z.strictObject({
+  search: trimmedString(1, 120).optional(),
+  sort: noteListSortSchema.optional(),
+  page: z.coerce.number().int().min(1).optional(),
+  pageSize: z.coerce.number().int().min(1).max(100).optional(),
+});
+
+export const noteListMetaSchema = z.strictObject({
+  page: z.number().int().min(1),
+  pageSize: z.number().int().min(1).max(100),
+  totalItems: z.number().int().min(0).max(500),
+  totalPages: z.number().int().min(1),
+  search: z.union([trimmedString(1, 120), z.null()]),
+  sort: noteListSortSchema,
+});
+
 export const noteListResponseSchema = z.strictObject({
-  items: z.array(noteDtoSchema).max(500),
+  items: z.array(noteDtoSchema).max(100),
+  meta: noteListMetaSchema,
 });
 
 export type NoteDto = z.infer<typeof noteDtoSchema>;
 export type NoteWriteRequest = z.infer<typeof noteWriteRequestSchema>;
+export type NoteListSort = z.infer<typeof noteListSortSchema>;
+export type NoteListQuery = z.infer<typeof noteListQuerySchema>;
+export type NoteListMeta = z.infer<typeof noteListMetaSchema>;
 export type NoteListResponse = z.infer<typeof noteListResponseSchema>;

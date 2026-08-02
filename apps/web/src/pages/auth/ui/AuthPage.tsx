@@ -3,6 +3,7 @@ import {Link, useSearchParams} from 'react-router-dom';
 import {LoginForm} from '../../../features/auth/login/ui/LoginForm';
 import {RegisterForm} from '../../../features/auth/register/ui/RegisterForm';
 import {authHref, safeNext} from '../../../shared/lib/navigation';
+import {useDocumentTitle} from '../../../shared/lib/use-document-title';
 import {CenteredSurface} from '../../../shared/ui/centered-surface';
 import styles from './AuthPage.module.css';
 
@@ -14,6 +15,8 @@ export function AuthPage({mode}: AuthPageProps) {
   const isLogin = mode === 'login';
   const [params] = useSearchParams();
   const next = safeNext(params.get('next'));
+
+  useDocumentTitle(isLogin ? 'Войти в таверну' : 'Создать аккаунт');
 
   return (
     <CenteredSurface panelClassName={styles.panel ?? ''} top={<Link className={styles.brand} to="/">Таверна</Link>}>

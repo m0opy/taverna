@@ -15,5 +15,6 @@ export function useNpcs(campaignId: string, tag?: string) {
     queryKey: npcsQueryKey(campaignId, tag),
     queryFn: () => apiRequest<NpcListResponse>(query),
     enabled: Boolean(campaignId),
+    placeholderData: (previousData) => previousData,
   });
 }

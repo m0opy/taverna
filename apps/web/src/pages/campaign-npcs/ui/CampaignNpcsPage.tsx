@@ -12,6 +12,7 @@ import {CampaignTabs} from '../../../widgets/campaign-detail/ui/CampaignTabs';
 import {NpcEditor} from '../../../widgets/npc-editor/ui/NpcEditor';
 import {NpcList} from '../../../widgets/npc-list/ui/NpcList';
 import {ApiError} from '../../../shared/api/client';
+import {useDocumentTitle} from '../../../shared/lib/use-document-title';
 import {ConfirmDialog} from '../../../shared/ui/ConfirmDialog';
 import styles from './CampaignNpcsPage.module.css';
 
@@ -23,6 +24,8 @@ export function CampaignNpcsPage() {
   const deleteNpc = useDeleteNpc(id);
   const [editor, setEditor] = useState<'create' | NpcDto | null>(null);
   const [npcToDelete, setNpcToDelete] = useState<NpcDto | null>(null);
+
+  useDocumentTitle('NPC', campaign.data?.title);
 
   useEffect(() => {
     if (filter.tag && npcs.data && !npcs.data.availableTags.some((tag) => tag.toLocaleLowerCase() === filter.tag?.toLocaleLowerCase())) {
@@ -64,7 +67,7 @@ export function CampaignNpcsPage() {
           <p className={styles.eyebrow}>{npcs.error instanceof ApiError ? npcs.error.status : 'Ошибка'}</p>
           <h2>{npcs.error instanceof ApiError && npcs.error.status === 403 ? 'Нет доступа к NPC' : 'NPC недоступны'}</h2>
           <p>{npcs.error instanceof ApiError && npcs.error.status === 403 ? 'Только активные участники могут читать карточки.' : 'Проверьте соединение и попробуйте ещё раз.'}</p>
-          <button className={styles.retryButton} type="button" onClick={() => void npcs.refetch()}>Повторить</button>
+          <Button view="action" size="l" onClick={() => void npcs.refetch()}>Повторить</Button>
         </section>
       ) : (
         <NpcList

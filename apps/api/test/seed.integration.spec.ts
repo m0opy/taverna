@@ -14,6 +14,7 @@ suite('Demo seed integration', () => {
   beforeAll(async () => {
     const env: AppEnv = {
       APP_ORIGIN: 'http://localhost:5173',
+      ALLOW_INSECURE_SESSION_COOKIES: false,
       APP_VERSION: 'seed-test',
       DATABASE_URL: databaseUrl!,
       ENABLE_DEMO_SEED: false,

@@ -1,3 +1,4 @@
+import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
 import {renderToStaticMarkup} from 'react-dom/server';
 import {MemoryRouter} from 'react-router-dom';
 import {describe, expect, it, vi} from 'vitest';
@@ -49,15 +50,19 @@ const campaign = {
 describe('campaign detail', () => {
   it('shows the current role and owner/player membership rows', () => {
     const markup = renderToStaticMarkup(
-      <MemoryRouter>
-        <CampaignDetailView campaign={campaign} id="campaign-1" section="home" />
-      </MemoryRouter>,
+      <QueryClientProvider client={new QueryClient()}>
+        <MemoryRouter>
+          <CampaignDetailView campaign={campaign} id="campaign-1" notice="Вы вступили в кампанию." section="home" />
+        </MemoryRouter>
+      </QueryClientProvider>,
     );
 
     expect(markup).toContain('Мастер');
     expect(markup).toContain('Полина');
     expect(markup).toContain('Лорас');
     expect(markup).toContain('Бард · Алексей');
+    expect(markup).toContain('Вы вступили в кампанию.');
+    expect(markup).toContain('aria-current="page"');
     expect(markup).not.toContain('Раскрыть предысторию');
     expect(markup).not.toContain('Показать предысторию');
   });

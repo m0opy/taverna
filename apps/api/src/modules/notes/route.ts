@@ -9,6 +9,7 @@ import {
 } from './service.js';
 import {
   noteParamsSchema,
+  parseNoteListQuery,
   notesParamsSchema,
   parseNoteWriteRequest,
 } from './schemas.js';
@@ -23,7 +24,8 @@ function requirePrisma(app: FastifyInstance) {
 export async function registerNotesRoutes(app: FastifyInstance): Promise<void> {
   app.get('/campaigns/:campaignId/notes', {preHandler: app.authenticate}, async (request) => {
     const {campaignId} = notesParamsSchema.parse(request.params);
-    return getNotes(requirePrisma(app), campaignId, request.currentUserId!);
+    const query = parseNoteListQuery(request.query);
+    return getNotes(requirePrisma(app), campaignId, request.currentUserId!, query);
   });
 
   app.post('/campaigns/:campaignId/notes', {preHandler: app.authenticate}, async (request, reply) => {

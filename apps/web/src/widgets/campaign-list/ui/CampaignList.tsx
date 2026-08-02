@@ -1,6 +1,7 @@
 import type {CampaignListResponse} from '@taverna/contracts';
 import {Button} from '@gravity-ui/uikit';
-import {useNavigate} from 'react-router-dom';
+import {useEffect} from 'react';
+import {useLocation, useNavigate} from 'react-router-dom';
 
 import {useCampaigns} from '../../../entities/campaign/api/use-campaigns';
 import {ApiError} from '../../../shared/api/client';
@@ -11,6 +12,16 @@ type CampaignSummary = CampaignListResponse['items'][number];
 
 export function CampaignList() {
   const campaigns = useCampaigns();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const notice = typeof location.state === 'object' && location.state && 'notice' in location.state && typeof location.state.notice === 'string'
+    ? location.state.notice
+    : null;
+
+  useEffect(() => {
+    if (!notice) return;
+    navigate({pathname: location.pathname, search: location.search, hash: location.hash}, {replace: true, state: null});
+  }, [location.hash, location.pathname, location.search, navigate, notice]);
 
   if (campaigns.isPending) {
     return <CampaignListLoadingState />;
@@ -23,12 +34,15 @@ export function CampaignList() {
       <section className={styles.emptyState} role="alert">
         <h2>{isForbidden ? 'Список кампаний недоступен' : 'Не удалось открыть хроники'}</h2>
         <p>{isForbidden ? 'У этой сессии нет доступа к списку кампаний.' : 'Проверьте соединение и попробуйте ещё раз.'}</p>
-        <Button onClick={() => campaigns.refetch()}>Повторить</Button>
+        <Button view="action" size="l" onClick={() => campaigns.refetch()}>Повторить</Button>
       </section>
     );
   }
 
-  return <CampaignListView items={campaigns.data.items} />;
+  return <>
+    {notice && <p className={styles.notice} role="status">{notice}</p>}
+    <CampaignListView items={campaigns.data.items} />
+  </>;
 }
 
 export function CampaignListLoadingState() {

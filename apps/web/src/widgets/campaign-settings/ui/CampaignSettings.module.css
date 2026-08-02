@@ -75,6 +75,7 @@
 .inviteUrl { margin: 0; padding: 13px 14px; overflow-wrap: anywhere; border-radius: var(--radius-control); background: #f4e9de; }
 .actions { display: flex; flex-wrap: wrap; gap: 12px; }
 .error { margin: 0; color: var(--color-danger); }
+.success { margin: 0; color: #25643a; }
 
 .form input:focus-visible,
 .form textarea:focus-visible,

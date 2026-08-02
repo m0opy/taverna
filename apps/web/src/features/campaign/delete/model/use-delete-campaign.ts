@@ -11,7 +11,7 @@ export function useDeleteCampaign(campaignId: string) {
     onSuccess: () => {
       queryClient.removeQueries({queryKey: ['campaign', campaignId]});
       void queryClient.invalidateQueries({queryKey: ['campaigns']});
-      navigate('/campaigns', {replace: true});
+      navigate('/campaigns', {replace: true, state: {notice: 'Кампания удалена.'}});
     },
   });
 }

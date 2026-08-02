@@ -21,7 +21,7 @@ COPY packages/contracts ./packages/contracts
 COPY apps/web ./apps/web
 RUN pnpm --filter @taverna/contracts build && pnpm --filter @taverna/web build
 
-FROM caddy:2.11-alpine AS production
-COPY infra/Caddyfile /etc/caddy/Caddyfile
-COPY --from=build /workspace/apps/web/dist /srv
-EXPOSE 80 443 443/udp
+FROM nginx:1.28-alpine AS production
+COPY infra/nginx.conf /etc/nginx/conf.d/default.conf
+COPY --from=build /workspace/apps/web/dist /usr/share/nginx/html
+EXPOSE 80

@@ -55,6 +55,7 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<FastifyIn
 
   await app.register(async (scopedApp) => {
     await registerHealthModule(scopedApp, {
+      demoLoginAvailable: env.ENABLE_DEMO_SEED && Boolean(env.DEMO_PASSWORD),
       healthcheck:
         options.healthcheck ??
         (async () => {

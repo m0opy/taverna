@@ -28,6 +28,12 @@ export function useAuthForm(mode: AuthMode, next: string) {
     },
   });
 
+  const resetError = () => {
+    if (mutation.error) {
+      mutation.reset();
+    }
+  };
+
   const submit = (event: FormEvent) => {
     event.preventDefault();
     mutation.mutate();
@@ -39,9 +45,18 @@ export function useAuthForm(mode: AuthMode, next: string) {
     isPending: mutation.isPending,
     name,
     password,
-    setEmail,
-    setName,
-    setPassword,
+    setEmail: (value: string) => {
+      resetError();
+      setEmail(value);
+    },
+    setName: (value: string) => {
+      resetError();
+      setName(value);
+    },
+    setPassword: (value: string) => {
+      resetError();
+      setPassword(value);
+    },
     submit,
   };
 }

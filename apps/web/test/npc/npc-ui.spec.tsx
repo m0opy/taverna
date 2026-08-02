@@ -16,8 +16,10 @@ vi.mock('../../src/features/npc/edit/model/use-edit-npc', () => ({
   useEditNpc: () => ({error: null, isPending: false, mutate: vi.fn()}),
 }));
 
+import {npcInitials} from '../../src/entities/npc/model/presentation';
 import {NpcEditor} from '../../src/widgets/npc-editor/ui/NpcEditor';
 import {NpcList} from '../../src/widgets/npc-list/ui/NpcList';
+import {NpcRelationsField} from '../../src/widgets/npc-relations/ui/NpcRelationsField';
 import {npcFixture} from '../test-data/npcs';
 
 describe('NPC UI', () => {
@@ -40,6 +42,7 @@ describe('NPC UI', () => {
     expect(markup).toContain('Иреена');
     expect(markup).toContain('защищает');
     expect(markup).toContain('Нейтральный');
+    expect(markup).toContain('aria-pressed="true"');
   });
 
   it('renders the empty state for a tag with no matches', () => {
@@ -91,5 +94,48 @@ describe('NPC UI', () => {
     expect(markup).toContain('Теги');
     expect(markup).toContain('Связи');
     expect(markup).toContain('Иреена');
+  });
+
+  it('shows duplicate relation validation in the widget field', () => {
+    const markup = renderToStaticMarkup(
+      <NpcRelationsField
+        items={[
+          npcFixture({relations: []}),
+          npcFixture({id: '00000000-0000-4000-8000-000000000104', name: 'Иреена', relations: []}),
+        ]}
+        relations={[
+          {toNpcId: '00000000-0000-4000-8000-000000000104', label: 'союз'},
+          {toNpcId: '00000000-0000-4000-8000-000000000104', label: 'дубль'},
+        ]}
+        onChange={vi.fn()}
+      />,
+    );
+
+    expect(markup).toContain('Нельзя добавить связь с одним NPC дважды.');
+  });
+
+  it('renders expandable notes and keeps cards compact without placeholder notes', () => {
+    const longNotes = ['Первая строка', 'Вторая строка', 'Третья строка', 'Четвёртая строка'].join('\n');
+    const markup = renderToStaticMarkup(
+      <NpcList
+        availableTags={[]}
+        items={[
+          npcFixture({notes: longNotes}),
+          npcFixture({id: '00000000-0000-4000-8000-000000000105', name: 'Молчун', notes: '', tags: [], relations: []}),
+        ]}
+        onCreate={vi.fn()}
+        onDelete={vi.fn()}
+        onEdit={vi.fn()}
+        onTagChange={vi.fn()}
+      />,
+    );
+
+    expect(markup).toContain('Показать полностью');
+    expect(markup).toContain(longNotes);
+    expect(markup).not.toContain('Без описания.');
+  });
+
+  it('keeps emoji initials intact', () => {
+    expect(npcInitials('🧙‍♀️ Маг')).toBe('🧙‍♀️М');
   });
 });

@@ -21,7 +21,13 @@ export function formatNextSessionMeta(value: string): string {
   const today = new Date();
   const todayUtc = Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate());
   const days = Math.round((date.getTime() - todayUtc) / 86_400_000);
-  const relative = days === 0 ? 'сегодня' : days === 1 ? 'завтра' : days === -1 ? 'вчера' : `${Math.abs(days)} дн. ${days > 0 ? 'до игры' : 'назад'}`;
+  const relative = days === 0
+    ? 'сегодня'
+    : days === 1
+      ? 'завтра'
+      : days === -1
+        ? 'вчера'
+        : `${new Intl.NumberFormat('ru-RU').format(Math.abs(days))} дн. ${days > 0 ? 'до игры' : 'назад'}`;
 
-  return `${weekday} · ${relative}`;
+  return `${weekday.slice(0, 1).toLocaleUpperCase('ru-RU')}${weekday.slice(1)} · ${relative}`;
 }

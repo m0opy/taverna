@@ -8,7 +8,16 @@ const include = {memberships: {where: {leftAt: null}, include: {user: true}, ord
 type Campaign = Prisma.CampaignGetPayload<{include: typeof include}>;
 const db = (app: FastifyInstance) => { if (!app.prisma) throw new AppError(500, 'INTERNAL_ERROR', 'Database is unavailable'); return app.prisma; };
 const calendar = (date: Date | null) => date?.toISOString().slice(0, 10) ?? null;
-const dateValue = (value: string) => { const date = new Date(`${value}T00:00:00.000Z`); if (Number.isNaN(date.getTime()) || date.toISOString().slice(0, 10) !== value) throw new AppError(400, 'VALIDATION_ERROR', 'Validation failed', {fields: {nextSessionAt: 'Expected YYYY-MM-DD'}}); return date; };
+const today = () => {
+ const date = new Date();
+ return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+};
+const dateValue = (value: string) => {
+ const date = new Date(`${value}T00:00:00.000Z`);
+ if (Number.isNaN(date.getTime()) || date.toISOString().slice(0, 10) !== value) throw new AppError(400, 'VALIDATION_ERROR', 'Validation failed', {fields: {nextSessionAt: 'Expected YYYY-MM-DD'}});
+ if (value < today()) throw new AppError(400, 'VALIDATION_ERROR', 'Validation failed', {fields: {nextSessionAt: 'Choose today or a future date'}});
+ return date;
+};
 function dto(app: FastifyInstance, campaign: Campaign, userId: string): CampaignDetailDto {
  const mine=campaign.memberships.find((m)=>m.userId===userId); if(!mine) throw new AppError(403,'CAMPAIGN_FORBIDDEN','Campaign access denied');
  const summary: CampaignSummaryDto={id:campaign.id,title:campaign.title,coverKey:campaign.coverKey as CampaignSummaryDto['coverKey'],nextSessionAt:calendar(campaign.nextSessionAt),membersCount:campaign.memberships.length,myRole:campaign.ownerId===userId?'master':'player'};

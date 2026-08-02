@@ -54,6 +54,10 @@
   line-height: 1.45;
 }
 
+.memberActions {
+  margin-top: 22px;
+}
+
 @media (max-width: 640px) {
   .panel {
     padding: 24px 20px;
